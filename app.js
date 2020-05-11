@@ -19,7 +19,10 @@ bot.on('message', function (event) {
   console.log(event);
   if (event.message.type == 'text') {
     if (event.message.text.toLowerCase().includes('lala')) {
-      const removeLalaMsg = event.message.text.split('lala').join(' ');
+      const removeLalaMsg = event.message.text
+        .toLowerCase()
+        .split('lala')
+        .join(' ');
       const replyMsg = `偶縮 :${removeLalaMsg}`;
       event
         .reply(replyMsg)
