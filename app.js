@@ -20,16 +20,16 @@ bot.on('message', function (event) {
   if (event.message.type == 'text') {
     if (event.message.text.toLowerCase().includeds('lala')) {
       const replyMsg = `偶縮 :${event.message.text}`;
+      event
+        .reply(replyMsg)
+        .then(function (data) {
+          console.log('Success', data);
+        })
+        .catch(function (error) {
+          console.log('Error', error);
+        });
     }
   }
-  event
-    .reply(replyMsg)
-    .then(function (data) {
-      console.log('Success', data);
-    })
-    .catch(function (error) {
-      console.log('Error', error);
-    });
 });
 
 // data_a01.includes('L@')
