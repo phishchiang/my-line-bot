@@ -18,7 +18,7 @@ app.post('/', linebotParser);
 bot.on('message', function (event) {
   console.log(event);
   if (event.message.type == 'text') {
-    if (event.message.text.toLowerCase().includeds('lala')) {
+    if (event.message.text.toLowerCase().includes('lala')) {
       const replyMsg = `偶縮 :${event.message.text}`;
       event
         .reply(replyMsg)
