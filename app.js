@@ -19,7 +19,8 @@ bot.on('message', function (event) {
   console.log(event);
   if (event.message.type == 'text') {
     if (event.message.text.toLowerCase().includes('lala')) {
-      const replyMsg = `偶縮 :${event.message.text}`;
+      const removeLalaMsg = event.message.text.split('lala').join(' ');
+      const replyMsg = `偶縮 :${removeLalaMsg}`;
       event
         .reply(replyMsg)
         .then(function (data) {
@@ -32,6 +33,7 @@ bot.on('message', function (event) {
   }
 });
 
+// YYY.join(" ")
 // data_a01.includes('L@')
 // data_a01.indexOf('lalal@n')
 
