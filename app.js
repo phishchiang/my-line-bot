@@ -17,17 +17,23 @@ app.post('/', linebotParser);
 
 bot.on('message', function (event) {
   console.log(event);
-  const replyMsg = `Hello you just type :${event.message.text}`;
+  if (event.message.type == 'text') {
+    if (event.message.text.toLowerCase().includeds('lala')) {
+      const replyMsg = `偶縮 :${event.message.text}`;
+    }
+  }
   event
     .reply(replyMsg)
     .then(function (data) {
-      //console.log(event)
       console.log('Success', data);
     })
     .catch(function (error) {
       console.log('Error', error);
     });
 });
+
+// data_a01.includes('L@')
+// data_a01.indexOf('lalal@n')
 
 // Bot所監聽的webhook路徑與port
 // bot.listen('/', 3000, function () {
