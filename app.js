@@ -1,6 +1,7 @@
 const linebot = require('linebot');
 const express = require('express');
 const dotenv = require('dotenv');
+const Transaction = require('./models/guessVal');
 dotenv.config({ path: './config/config.env' });
 const connectDB = require('./config/db');
 connectDB();
@@ -15,6 +16,24 @@ const bot = linebot({
 const app = express();
 const linebotParser = bot.parser();
 app.post('/', linebotParser);
+
+let myData = {
+  text: 'Good',
+  amount: 50,
+};
+// POST method route
+app.post('/guess', async (req, res) => {
+  try {
+    const transaction = await Transaction.create(myData);
+    return res.status(201).json({
+      success: true,
+      data: transaction,
+    });
+  } catch (error) {
+    (error) => console.log('Error', error);
+  }
+});
+
 let magicNum = 0;
 bot.on('message', function (event) {
   console.log(event);
