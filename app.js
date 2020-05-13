@@ -2,6 +2,8 @@ const linebot = require('linebot');
 const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
+const connectDB = require('./config/db');
+connectDB();
 
 const bot = linebot({
   channelId: process.env.CHANNEL_ID,

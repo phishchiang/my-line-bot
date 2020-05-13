@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node .",
-    "server": "nodemon app.js"
+    "start": "node app",
+    "server": "nodemon app"
   },
   "keywords": [],
   "author": "Phish Chiang",
