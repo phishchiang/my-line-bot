@@ -45,13 +45,13 @@ bot.on('message', function (event) {
 
 function guessRes(guessNum) {
   guessNum = parseInt(guessNum.split('guess')[1]);
-  if (guessNum > number) {
+  if (guessNum > magicNum) {
     console.log('too big');
     return 'too big';
-  } else if (guessNum < number) {
+  } else if (guessNum < magicNum) {
     console.log('too small');
     return 'too small';
-  } else if (guessNum === number) {
+  } else if (guessNum === magicNum) {
     console.log('win');
     return 'win';
   }
