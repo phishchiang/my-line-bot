@@ -32,7 +32,8 @@ bot.on('message', function (event) {
   if (event.message.text.toLowerCase().includes('guess')) {
     if (event.message.text.toLowerCase().includes('guess start')) {
       magicNum = Math.floor(Math.random() * 100);
-      event.reply('重新洗牌了!!');
+      const replyMsg = '偶縮 : 重新洗牌了!!';
+      event.reply(replyMsg);
     }
     const removeLalaMsg = guessRes(event.message.text);
     const replyMsg = `偶縮 :${removeLalaMsg}`;
@@ -46,14 +47,14 @@ bot.on('message', function (event) {
 function guessRes(guessNum) {
   guessNum = parseInt(guessNum.split('guess')[1]);
   if (guessNum > magicNum) {
-    console.log('too big');
-    return 'too big';
+    console.log('太大了');
+    return '太大了';
   } else if (guessNum < magicNum) {
-    console.log('too small');
-    return 'too small';
+    console.log('太小了');
+    return '太小了';
   } else if (guessNum === magicNum) {
-    console.log('win');
-    return 'win';
+    console.log('答對了!!');
+    return '答對了!!';
   }
 }
 
