@@ -3,7 +3,6 @@ const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
 
-// 填入辨識Line Channel的資訊
 const bot = linebot({
   channelId: process.env.CHANNEL_ID,
   channelSecret: process.env.CHANNEL_SECRET,
@@ -17,22 +16,17 @@ app.post('/', linebotParser);
 
 bot.on('message', function (event) {
   console.log(event);
-  if (event.message.type == 'text') {
-    if (event.message.text.toLowerCase().includes('lala')) {
-      const removeLalaMsg = event.message.text
-        .toLowerCase()
-        .split('lala')
-        .join(' ');
-      const replyMsg = `偶縮 :${removeLalaMsg}`;
-      event
-        .reply(replyMsg)
-        .then(function (data) {
-          console.log('Success', data);
-        })
-        .catch(function (error) {
-          console.log('Error', error);
-        });
-    }
+
+  if (event.message.text.toLowerCase().includes('lala')) {
+    const removeLalaMsg = event.message.text
+      .toLowerCase()
+      .split('lala')
+      .join(' ');
+    const replyMsg = `偶縮 :${removeLalaMsg}`;
+    event
+      .reply(replyMsg)
+      .then((data) => console.log('Success', data))
+      .catch((error) => console.log('Error', error));
   }
 });
 
