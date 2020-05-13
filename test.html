@@ -7,7 +7,23 @@
   </head>
   <body>
     <script>
-      let message = ' I love you lala DDDD';
+      let number = Math.floor(Math.random() * 10);
+      // message.split('game')[1]
+      let message = 'game 5';
+
+      function BBB(guessNum) {
+        guessNum = parseInt(guessNum.split('game')[1]);
+        if (guessNum > number) {
+          console.log('too big');
+          return 'too big';
+        } else if (guessNum < number) {
+          console.log('too small');
+          return 'too small';
+        } else if (guessNum === number) {
+          console.log('win');
+          return 'win';
+        }
+      }
       // message.includes(bbb.);
       // .toLowerCase()
 

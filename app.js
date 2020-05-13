@@ -13,7 +13,7 @@ const bot = linebot({
 const app = express();
 const linebotParser = bot.parser();
 app.post('/', linebotParser);
-
+let magicNum = 0;
 bot.on('message', function (event) {
   console.log(event);
 
@@ -28,7 +28,34 @@ bot.on('message', function (event) {
       .then((data) => console.log('Success', data))
       .catch((error) => console.log('Error', error));
   }
+
+  if (event.message.text.toLowerCase().includes('guess')) {
+    if (event.message.text.toLowerCase().includes('guess start')) {
+      magicNum = Math.floor(Math.random() * 100);
+      event.reply('重新洗牌了!!');
+    }
+    const removeLalaMsg = guessRes(event.message.text);
+    const replyMsg = `偶縮 :${removeLalaMsg}`;
+    event
+      .reply(replyMsg)
+      .then((data) => console.log('Success', data))
+      .catch((error) => console.log('Error', error));
+  }
 });
+
+function guessRes(guessNum) {
+  guessNum = parseInt(guessNum.split('game')[1]);
+  if (guessNum > number) {
+    console.log('too big');
+    return 'too big';
+  } else if (guessNum < number) {
+    console.log('too small');
+    return 'too small';
+  } else if (guessNum === number) {
+    console.log('win');
+    return 'win';
+  }
+}
 
 // YYY.join(" ")
 // data_a01.includes('L@')
