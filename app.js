@@ -44,7 +44,7 @@ bot.on('message', function (event) {
 });
 
 function guessRes(guessNum) {
-  guessNum = parseInt(guessNum.split('game')[1]);
+  guessNum = parseInt(guessNum.split('guess')[1]);
   if (guessNum > number) {
     console.log('too big');
     return 'too big';
