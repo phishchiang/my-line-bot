@@ -3,6 +3,7 @@ const line = require('@line/bot-sdk');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
 const Transaction = require('./models/guessVal');
+const axios = require('axios');
 // const guessRes = require('./utlis/parseGuess');
 const connectDB = require('./config/db');
 connectDB();
@@ -27,6 +28,9 @@ app.post('/', line.middleware(config), (req, res) => {
     });
 });
 
+const transactions = require('./routes/transaction');
+app.use('/api/v1/transactions', transactions);
+
 let magicNum = 0;
 let winner = false;
 // event handler
@@ -41,22 +45,33 @@ async function handleEvent(event) {
     const echoMsg = event.message.text.toLowerCase().split('lala').join(' ');
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
-    const replyMsg = {
-      type: 'text',
-      text: `${userProfile.displayName}, ${echoMsg}`,
-    };
+    // const replyMsg = {
+    //   type: 'text',
+    //   text: `${userProfile.displayName}, ${echoMsg}`,
+    // };
 
-    let myData = {
-      text: echoMsg,
-      amount: 50,
-    };
-    const transaction = await Transaction.create(myData);
-    // return res.status(201).json({
-    //   success: true,
-    //   data: transaction,
-    // });
+    try {
+      // fetch data from a url endpoint
+      const data = await axios.post('/api/v1/transactions', {
+        text: echoMsg,
+        amount: 50,
+      });
+      console.log(data.data);
+      const replyMsg = {
+        type: 'text',
+        text: `${userProfile.displayName}, ${data.data}`,
+      };
+      return client.replyMessage(event.replyToken, replyMsg);
+    } catch (error) {
+      console.log('error', error);
+      const replyMsg = {
+        type: 'text',
+        text: `${userProfile.displayName}, ${error.response.data.error}`,
+      };
+      return client.replyMessage(event.replyToken, replyMsg);
+    }
 
-    return client.replyMessage(event.replyToken, replyMsg);
+    // return client.replyMessage(event.replyToken, replyMsg);
   }
 
   // keyword restart
