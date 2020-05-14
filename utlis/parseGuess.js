@@ -1,4 +1,4 @@
-const guessRes = (guessNum) => {
+const guessRes = (guessNum, magicNum) => {
   guessNum = parseInt(guessNum.toLowerCase().split('guess')[1]);
   if (guessNum > magicNum) {
     console.log('太大了');
