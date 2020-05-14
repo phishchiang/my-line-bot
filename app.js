@@ -2,6 +2,9 @@ const express = require('express');
 const line = require('@line/bot-sdk');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
+const Transaction = require('./models/guessVal');
+const connectDB = require('./config/db');
+connectDB();
 
 const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
@@ -29,10 +32,16 @@ function handleEvent(event) {
     return Promise.resolve(null);
   }
 
-  return client.replyMessage(event.replyToken, {
-    type: 'text',
-    text: event.message.text,
-  });
+  if (event.message.text.toLowerCase().includes('lala')) {
+    const removeLalaMsg = event.message.text
+      .toLowerCase()
+      .split('lala')
+      .join(' ');
+    const replyMsg = { type: 'text', text: `偶縮 :${removeLalaMsg}` };
+  }
+
+  // use reply API
+  return client.replyMessage(event.replyToken, replyMsg);
 }
 
 const PORT = process.env.PORT || 8080;
