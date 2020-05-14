@@ -27,6 +27,7 @@ app.post('/', line.middleware(config), (req, res) => {
 });
 
 let magicNum = 0;
+let winner = false;
 // event handler
 async function handleEvent(event) {
   console.log(event);
@@ -51,13 +52,26 @@ async function handleEvent(event) {
   if (event.message.text.toLowerCase().includes('restart')) {
     magicNum = Math.floor(Math.random() * 100);
     const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
-
+    winner = false;
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
   // keyword guess
-  if (event.message.text.toLowerCase().includes('guess')) {
+  if (event.message.text.toLowerCase().includes('guess') && winner == false) {
     const guessAnswer = guessRes(event.message.text);
+    const userId = event.source.userId;
+    const userProfile = await client.getProfile(userId);
+    const replyMsg = {
+      type: 'text',
+      text: `${userProfile.displayName}, ${guessAnswer}`,
+    };
+
+    return client.replyMessage(event.replyToken, replyMsg);
+  }
+
+  // keyword guess WINNER
+  if (event.message.text.toLowerCase().includes('guess') && winner == ture) {
+    const guessAnswer = '遊戲結束';
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
     const replyMsg = {
@@ -78,8 +92,9 @@ function guessRes(guessNum) {
     console.log('太小了');
     return '太小了';
   } else if (guessNum === magicNum) {
-    console.log('答對了!!');
-    return '答對了!!';
+    console.log('答對了');
+    winner = true;
+    return '答對了';
   }
 }
 
