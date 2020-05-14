@@ -59,7 +59,7 @@ async function handleEvent(event) {
 
   // keyword guess
   if (event.message.text.toLowerCase().includes('guess') && winner == false) {
-    const guessAnswer = guessRes(event.message.text, magicNum);
+    const guessAnswer = guessRes(event.message.text, magicNum, winner);
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
     const replyMsg = {
