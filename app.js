@@ -9,10 +9,18 @@ const config = {
 
 const app = express();
 app.post('/', line.middleware(config), (req, res) => {
-  Promise.all(req.body.events.map(handleEvent)).then((result) =>
-    res.json(result)
-  );
+  Promise.all(req.body.events.map(handleEvent))
+    .then((result) => res.json(result))
+    .catch((err) => {
+      console.error(err);
+      res.status(500).end();
+    });
 });
+// app.post('/', line.middleware(config), (req, res) => {
+//   Promise.all(req.body.events.map(handleEvent)).then((result) =>
+//     res.json(result)
+//   );
+// });
 
 const client = new line.Client(config);
 function handleEvent(event) {
@@ -26,9 +34,9 @@ function handleEvent(event) {
   });
 }
 
-app.listen(process.env.PORT || 8080, function () {
-  console.log('App now running on port');
-});
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 /*
 const linebot = require('linebot');
