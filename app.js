@@ -36,15 +36,12 @@ async function handleEvent(event) {
 
   // keyword lala
   if (event.message.text.toLowerCase().includes('lala')) {
-    const removeLalaMsg = event.message.text
-      .toLowerCase()
-      .split('lala')
-      .join(' ');
+    const echoMsg = event.message.text.toLowerCase().split('lala').join(' ');
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
     const replyMsg = {
       type: 'text',
-      text: `偶縮 :${userProfile.displayName},${removeLalaMsg}`,
+      text: `${userProfile.displayName}, ${echoMsg}`,
     };
 
     return client.replyMessage(event.replyToken, replyMsg);
@@ -53,15 +50,20 @@ async function handleEvent(event) {
   // keyword restart
   if (event.message.text.toLowerCase().includes('restart')) {
     magicNum = Math.floor(Math.random() * 100);
-    const replyMsg = { type: 'text', text: '偶縮 : 重新洗牌了!!開始!!' };
+    const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
 
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
   // keyword guess
   if (event.message.text.toLowerCase().includes('guess')) {
-    const removeLalaMsg = guessRes(event.message.text);
-    const replyMsg = { type: 'text', text: `偶縮 :${removeLalaMsg}` };
+    const guessAnswer = guessRes(event.message.text);
+    const userId = event.source.userId;
+    const userProfile = await client.getProfile(userId);
+    const replyMsg = {
+      type: 'text',
+      text: `${userProfile.displayName}, ${guessAnswer}`,
+    };
 
     return client.replyMessage(event.replyToken, replyMsg);
   }
