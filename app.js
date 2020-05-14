@@ -46,6 +46,16 @@ async function handleEvent(event) {
       text: `${userProfile.displayName}, ${echoMsg}`,
     };
 
+    let myData = {
+      text: echoMsg,
+      amount: 50,
+    };
+    const transaction = await Transaction.create(myData);
+    // return res.status(201).json({
+    //   success: true,
+    //   data: transaction,
+    // });
+
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
