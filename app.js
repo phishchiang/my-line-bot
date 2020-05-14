@@ -3,7 +3,7 @@ const line = require('@line/bot-sdk');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
 const Transaction = require('./models/guessVal');
-const guessRes = require('./utlis/parseGuess');
+// const guessRes = require('./utlis/parseGuess');
 const connectDB = require('./config/db');
 connectDB();
 
@@ -83,6 +83,21 @@ async function handleEvent(event) {
     return client.replyMessage(event.replyToken, replyMsg);
   }
 }
+
+const guessRes = (guessNum) => {
+  guessNum = parseInt(guessNum.toLowerCase().split('guess')[1]);
+  if (guessNum > magicNum) {
+    console.log('太大了');
+    return '太大了';
+  } else if (guessNum < magicNum) {
+    console.log('太小了');
+    return '太小了';
+  } else if (guessNum === magicNum) {
+    console.log('答對了');
+    winner = true;
+    return '答對了';
+  }
+};
 
 const PORT = process.env.PORT || 8080;
 
