@@ -7,7 +7,12 @@ const config = {
   channelSecret: process.env.CHANNEL_SECRET,
 };
 
+// create LINE SDK client
+const client = new line.Client(config);
+
 const app = express();
+
+// register a webhook handler with middleware
 app.post('/', line.middleware(config), (req, res) => {
   Promise.all(req.body.events.map(handleEvent))
     .then((result) => res.json(result))
@@ -16,13 +21,8 @@ app.post('/', line.middleware(config), (req, res) => {
       res.status(500).end();
     });
 });
-// app.post('/', line.middleware(config), (req, res) => {
-//   Promise.all(req.body.events.map(handleEvent)).then((result) =>
-//     res.json(result)
-//   );
-// });
 
-const client = new line.Client(config);
+// event handler
 function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
