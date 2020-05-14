@@ -41,10 +41,10 @@ async function handleEvent(event) {
       .split('lala')
       .join(' ');
     const userId = event.source.userId;
-    const displayName = await client.getProfile(userId);
+    const userProfile = await client.getProfile(userId);
     const replyMsg = {
       type: 'text',
-      text: `偶縮 :${displayName},${removeLalaMsg}`,
+      text: `偶縮 :${userProfile.displayName},${removeLalaMsg}`,
     };
 
     return client.replyMessage(event.replyToken, replyMsg);
