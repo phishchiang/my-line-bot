@@ -1,4 +1,4 @@
-export function guessRes(guessNum) {
+const guessRes = (guessNum) => {
   guessNum = parseInt(guessNum.toLowerCase().split('guess')[1]);
   if (guessNum > magicNum) {
     console.log('太大了');
@@ -11,4 +11,6 @@ export function guessRes(guessNum) {
     winner = true;
     return '答對了';
   }
-}
+};
+
+module.exports = guessRes;
