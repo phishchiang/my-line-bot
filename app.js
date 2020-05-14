@@ -33,6 +33,12 @@ app.use('/api/v1/transactions', transactions);
 
 let magicNum = 0;
 let winner = false;
+const config = {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  baseURL: 'http://localhost:8080',
+};
 // event handler
 async function handleEvent(event) {
   console.log(event);
@@ -52,10 +58,14 @@ async function handleEvent(event) {
 
     try {
       // fetch data from a url endpoint
-      const data = await axios.post('/api/v1/transactions', {
-        text: echoMsg,
-        amount: 50,
-      });
+      const data = await axios.post(
+        '/api/v1/transactions',
+        {
+          text: echoMsg,
+          amount: 50,
+        },
+        config
+      );
       console.log(data.data);
       const replyMsg = {
         type: 'text',
