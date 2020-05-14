@@ -70,7 +70,7 @@ async function handleEvent(event) {
   }
 
   // keyword guess WINNER
-  if (event.message.text.toLowerCase().includes('guess') && winner == ture) {
+  if (event.message.text.toLowerCase().includes('guess') && winner == true) {
     const guessAnswer = '遊戲結束';
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
