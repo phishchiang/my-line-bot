@@ -28,6 +28,7 @@ app.post('/', line.middleware(config), (req, res) => {
 
 // event handler
 function handleEvent(event) {
+  console.log(event);
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
   }
@@ -38,10 +39,10 @@ function handleEvent(event) {
       .split('lala')
       .join(' ');
     const replyMsg = { type: 'text', text: `偶縮 :${removeLalaMsg}` };
-  }
 
-  // use reply API
-  return client.replyMessage(event.replyToken, replyMsg);
+    // use reply API
+    return client.replyMessage(event.replyToken, replyMsg);
+  }
 }
 
 const PORT = process.env.PORT || 8080;
