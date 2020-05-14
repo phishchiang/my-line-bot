@@ -26,6 +26,7 @@ app.post('/', line.middleware(config), (req, res) => {
     });
 });
 
+let magicNum = 0;
 // event handler
 function handleEvent(event) {
   console.log(event);
@@ -33,6 +34,7 @@ function handleEvent(event) {
     return Promise.resolve(null);
   }
 
+  // keyword lala
   if (event.message.text.toLowerCase().includes('lala')) {
     const removeLalaMsg = event.message.text
       .toLowerCase()
@@ -40,8 +42,37 @@ function handleEvent(event) {
       .join(' ');
     const replyMsg = { type: 'text', text: `偶縮 :${removeLalaMsg}` };
 
-    // use reply API
     return client.replyMessage(event.replyToken, replyMsg);
+  }
+
+  // keyword restart
+  if (event.message.text.toLowerCase().includes('restart')) {
+    magicNum = Math.floor(Math.random() * 100);
+    const replyMsg = '偶縮 : 重新洗牌了!!開始!!';
+
+    return client.replyMessage(event.replyToken, replyMsg);
+  }
+
+  // keyword guess
+  if (event.message.text.toLowerCase().includes('guess')) {
+    const removeLalaMsg = guessRes(event.message.text);
+    const replyMsg = `偶縮 :${removeLalaMsg}`;
+
+    return client.replyMessage(event.replyToken, replyMsg);
+  }
+}
+
+function guessRes(guessNum) {
+  guessNum = parseInt(guessNum.toLowerCase().split('guess')[1]);
+  if (guessNum > magicNum) {
+    console.log('太大了');
+    return '太大了';
+  } else if (guessNum < magicNum) {
+    console.log('太小了');
+    return '太小了';
+  } else if (guessNum === magicNum) {
+    console.log('答對了!!');
+    return '答對了!!';
   }
 }
 
