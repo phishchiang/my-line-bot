@@ -28,7 +28,7 @@ app.post('/', line.middleware(config), (req, res) => {
 
 let magicNum = 0;
 // event handler
-function handleEvent(event) {
+async function handleEvent(event) {
   console.log(event);
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
@@ -40,7 +40,12 @@ function handleEvent(event) {
       .toLowerCase()
       .split('lala')
       .join(' ');
-    const replyMsg = { type: 'text', text: `偶縮 :${removeLalaMsg}` };
+    const userId = event.source.userId;
+    const displayName = await client.getProfile(userId);
+    const replyMsg = {
+      type: 'text',
+      text: `偶縮 :${displayName},${removeLalaMsg}`,
+    };
 
     return client.replyMessage(event.replyToken, replyMsg);
   }
