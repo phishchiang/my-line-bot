@@ -6,6 +6,36 @@ dotenv.config({ path: './config/config.env' });
 const connectDB = require('./config/db');
 connectDB();
 
+const line = require('@line/bot-sdk');
+
+const config = {
+  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.CHANNEL_SECRET,
+};
+
+const app = express();
+app.post('/webhook', line.middleware(config), (req, res) => {
+  Promise.all(req.body.events.map(handleEvent)).then((result) =>
+    res.json(result)
+  );
+});
+
+const client = new line.Client(config);
+function handleEvent(event) {
+  if (event.type !== 'message' || event.message.type !== 'text') {
+    return Promise.resolve(null);
+  }
+
+  return client.replyMessage(event.replyToken, {
+    type: 'text',
+    text: event.message.text,
+  });
+}
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
+/*
 const bot = linebot({
   channelId: process.env.CHANNEL_ID,
   channelSecret: process.env.CHANNEL_SECRET,
@@ -80,15 +110,8 @@ function guessRes(guessNum) {
   }
 }
 
-// YYY.join(" ")
-// data_a01.includes('L@')
-// data_a01.indexOf('lalal@n')
-
-// Bot所監聽的webhook路徑與port
-// bot.listen('/', 3000, function () {
-//   console.log('[BOT已準備就緒]');
-// });
 
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+*/
