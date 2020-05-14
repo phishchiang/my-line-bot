@@ -48,7 +48,7 @@ function handleEvent(event) {
   // keyword restart
   if (event.message.text.toLowerCase().includes('restart')) {
     magicNum = Math.floor(Math.random() * 100);
-    const replyMsg = '偶縮 : 重新洗牌了!!開始!!';
+    const replyMsg = { type: 'text', text: '偶縮 : 重新洗牌了!!開始!!' };
 
     return client.replyMessage(event.replyToken, replyMsg);
   }
@@ -56,7 +56,7 @@ function handleEvent(event) {
   // keyword guess
   if (event.message.text.toLowerCase().includes('guess')) {
     const removeLalaMsg = guessRes(event.message.text);
-    const replyMsg = `偶縮 :${removeLalaMsg}`;
+    const replyMsg = { type: 'text', text: `偶縮 :${removeLalaMsg}` };
 
     return client.replyMessage(event.replyToken, replyMsg);
   }
