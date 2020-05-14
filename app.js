@@ -66,7 +66,7 @@ async function handleEvent(event) {
       console.log('error', error);
       const replyMsg = {
         type: 'text',
-        text: `${userProfile.displayName}, ${error.response.data.error}`,
+        text: `${userProfile.displayName}, ${error}`,
       };
       return client.replyMessage(event.replyToken, replyMsg);
     }
