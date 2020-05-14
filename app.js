@@ -3,7 +3,7 @@ const line = require('@line/bot-sdk');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
 const Transaction = require('./models/guessVal');
-const { guessRes } = require('./utlis/parseGuess');
+const guessRes = require('./utlis/parseGuess');
 const connectDB = require('./config/db');
 connectDB();
 
