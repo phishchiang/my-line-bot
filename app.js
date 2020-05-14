@@ -33,7 +33,7 @@ app.use('/api/v1/transactions', transactions);
 
 let magicNum = 0;
 let winner = false;
-const config = {
+const configAxios = {
   headers: {
     'Content-Type': 'application/json',
   },
@@ -64,7 +64,7 @@ async function handleEvent(event) {
           text: echoMsg,
           amount: 50,
         },
-        config
+        configAxios
       );
       console.log(data.data);
       const replyMsg = {
