@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const GuessGameSchema = new mongoose.Schema({
-  text: {
+  groupId: {
     type: String,
     trim: true,
     // required: [true, 'Please add some text'],
