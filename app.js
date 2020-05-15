@@ -60,7 +60,7 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
-        '/api/v1/transactions',
+        'https://line-bot-8421.herokuapp.com/api/v1/transactions',
         {
           text: echoMsg,
           amount: 50,
