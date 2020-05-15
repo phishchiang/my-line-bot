@@ -63,6 +63,7 @@ async function handleEvent(event) {
         'https://line-bot-8421.herokuapp.com/api/v1/guessState',
         {
           text: echoMsg,
+          winner: true,
           amount: 50,
         },
         configAxios
