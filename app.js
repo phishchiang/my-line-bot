@@ -70,6 +70,7 @@ async function handleEvent(event) {
       console.log(data.data);
       const replyMsg = {
         type: 'text',
+        winner: true,
         text: `${userProfile.displayName}, ${data.data}`,
       };
       return client.replyMessage(event.replyToken, replyMsg);
