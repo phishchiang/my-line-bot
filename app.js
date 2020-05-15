@@ -13,6 +13,8 @@ const config = {
   channelSecret: process.env.CHANNEL_SECRET,
 };
 
+const transactions = require('./routes/transaction');
+
 // create LINE SDK client
 const client = new line.Client(config);
 
@@ -29,8 +31,6 @@ app.post('/', line.middleware(config), (req, res) => {
 });
 
 app.use(express.json());
-
-const transactions = require('./routes/transaction');
 app.use('/api/v1/transactions', transactions);
 
 let magicNum = 0;
@@ -39,7 +39,7 @@ const configAxios = {
   headers: {
     'Content-Type': 'application/json',
   },
-  baseURL: 'http://localhost:8080',
+  baseURL: 'http://localhost:8080/api/v1/transactions',
 };
 // event handler
 async function handleEvent(event) {
