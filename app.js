@@ -39,7 +39,7 @@ const configAxios = {
   headers: {
     'Content-Type': 'application/json',
   },
-  baseURL: 'http://localhost:8080/api/v1/transactions',
+  // baseURL: 'http://localhost:8080',
 };
 // event handler
 async function handleEvent(event) {
@@ -61,7 +61,7 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
-        '/api/v1/transactions',
+        'http://localhost:8080/api/v1/transactions',
         {
           text: echoMsg,
           amount: 50,
