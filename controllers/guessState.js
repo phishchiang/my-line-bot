@@ -5,7 +5,7 @@ const GuessState = require('../models/guessVal');
 // @access  Public
 exports.addGuessState = async (req, res, next) => {
   try {
-    const { text, winner, amount } = req.body;
+    const { groupId, winner, amount } = req.body;
     const guessState = await GuessState.create(req.body);
     return res.status(201).json({
       success: true,

@@ -62,7 +62,7 @@ async function handleEvent(event) {
       const data = await axios.post(
         'https://line-bot-8421.herokuapp.com/api/v1/guessState',
         {
-          text: echoMsg,
+          groupId: event.source.groupId,
           winner: true,
           amount: 50,
         },
@@ -71,7 +71,6 @@ async function handleEvent(event) {
       console.log(data.data);
       const replyMsg = {
         type: 'text',
-        winner: true,
         text: `${userProfile.displayName}, ${data.data}`,
       };
       return client.replyMessage(event.replyToken, replyMsg);
