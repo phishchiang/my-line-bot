@@ -28,6 +28,8 @@ app.post('/', line.middleware(config), (req, res) => {
     });
 });
 
+app.use(express.json());
+
 const transactions = require('./routes/transaction');
 app.use('/api/v1/transactions', transactions);
 
@@ -59,7 +61,7 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
-        'https://jsonplaceholder.typicode.com/posts',
+        '/api/v1/transactions',
         {
           text: echoMsg,
           amount: 50,
