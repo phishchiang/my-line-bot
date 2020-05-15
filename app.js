@@ -13,7 +13,7 @@ const config = {
   channelSecret: process.env.CHANNEL_SECRET,
 };
 
-const transactions = require('./routes/transaction');
+const guessState = require('./routes/guessState');
 
 // create LINE SDK client
 const client = new line.Client(config);
@@ -31,7 +31,7 @@ app.post('/', line.middleware(config), (req, res) => {
 });
 
 app.use(express.json());
-app.use('/api/v1/transactions', transactions);
+app.use('/api/v1/guessState', guessState);
 
 let magicNum = 0;
 let winner = false;
@@ -60,7 +60,7 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
-        'https://line-bot-8421.herokuapp.com/api/v1/transactions',
+        'https://line-bot-8421.herokuapp.com/api/v1/guessState',
         {
           text: echoMsg,
           amount: 50,
