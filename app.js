@@ -59,7 +59,7 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
-        '/api/v1/transactions',
+        'https://jsonplaceholder.typicode.com/posts',
         {
           text: echoMsg,
           amount: 50,
