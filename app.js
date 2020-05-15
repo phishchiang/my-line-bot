@@ -47,43 +47,50 @@ async function handleEvent(event) {
     return Promise.resolve(null);
   }
 
+  // keyword debug
+  if (event.message.text.toLowerCase().includes('debug')) {
+    magicNum = Math.floor(Math.random() * 100);
+    const replyMsg = { type: 'text', text: 'debug mode' };
+    return client.replyMessage(event.replyToken, replyMsg);
+
+    // try {
+    //   // fetch data from a url endpoint
+    //   const data = await axios.post(
+    //     'https://line-bot-8421.herokuapp.com/api/v1/guessState',
+    //     {
+    //       groupId: event.source.groupId,
+    //       winner: true,
+    //       amount: 50,
+    //     },
+    //     configAxios
+    //   );
+    //   console.log(data.data);
+    //   const replyMsg = {
+    //     type: 'text',
+    //     text: `${userProfile.displayName}, ${data.data}`,
+    //   };
+    //   return client.replyMessage(event.replyToken, replyMsg);
+    // } catch (error) {
+    //   console.log('error', error);
+    //   const replyMsg = {
+    //     type: 'text',
+    //     text: `${userProfile.displayName}, ${error}`,
+    //   };
+    //   return client.replyMessage(event.replyToken, replyMsg);
+    // }
+  }
+
   // keyword lala
   if (event.message.text.toLowerCase().includes('lala')) {
     const echoMsg = event.message.text.toLowerCase().split('lala').join(' ');
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
-    // const replyMsg = {
-    //   type: 'text',
-    //   text: `${userProfile.displayName}, ${echoMsg}`,
-    // };
+    const replyMsg = {
+      type: 'text',
+      text: `${userProfile.displayName}, ${echoMsg}`,
+    };
 
-    try {
-      // fetch data from a url endpoint
-      const data = await axios.post(
-        'https://line-bot-8421.herokuapp.com/api/v1/guessState',
-        {
-          groupId: event.source.groupId,
-          winner: true,
-          amount: 50,
-        },
-        configAxios
-      );
-      console.log(data.data);
-      const replyMsg = {
-        type: 'text',
-        text: `${userProfile.displayName}, ${data.data}`,
-      };
-      return client.replyMessage(event.replyToken, replyMsg);
-    } catch (error) {
-      console.log('error', error);
-      const replyMsg = {
-        type: 'text',
-        text: `${userProfile.displayName}, ${error}`,
-      };
-      return client.replyMessage(event.replyToken, replyMsg);
-    }
-
-    // return client.replyMessage(event.replyToken, replyMsg);
+    return client.replyMessage(event.replyToken, replyMsg);
   }
 
   // keyword restart
