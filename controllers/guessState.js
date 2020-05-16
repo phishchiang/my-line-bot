@@ -11,6 +11,7 @@ exports.updateGuessState = async (req, res, next) => {
         { groupId: req.params.id },
         {
           $set: {
+            winner: false,
             amount: magicNum,
           },
         }
