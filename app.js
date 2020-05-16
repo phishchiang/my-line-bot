@@ -47,7 +47,7 @@ async function handleEvent(event) {
     return Promise.resolve(null);
   }
 
-  // keyword debug_start
+  // keyword debug_guess
   if (event.message.text.toLowerCase().includes('debug_guess')) {
     // const replyMsg = { type: 'text', text: 'debug mode' };
     const userProfile = await client.getProfile(event.source.userId);
@@ -61,6 +61,18 @@ async function handleEvent(event) {
       console.log(event.message.text);
       magicNum = data.data.data[0].amount;
       const guessAnswer = guessRes(event.message.text, magicNum);
+      if (guessAnswer === '答對了') {
+        try {
+          const data = await axios.put(
+            `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
+          );
+          console.log(data);
+          const guessAnswer = guessRes(data);
+        } catch (error) {
+          console.log('error', error);
+          return client.replyMessage(event.replyToken, error);
+        }
+      }
 
       const replyMsg = {
         type: 'text',
@@ -77,7 +89,7 @@ async function handleEvent(event) {
     }
   }
 
-  // keyword debug_guess
+  // keyword debug_start
   if (event.message.text.toLowerCase().includes('debug_start')) {
     const userProfile = await client.getProfile(event.source.userId);
 

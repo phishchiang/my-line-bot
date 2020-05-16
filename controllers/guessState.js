@@ -1,7 +1,32 @@
 const GuessState = require('../models/guessVal');
 
+// @desc    Update addGuessState
+// @route   Update /api/v1/guessState/:groupID
+// @access  Public
+exports.updateGuessState = async (req, res, next) => {
+  try {
+    // const { groupId } = req.body;
+    // get the latest one from the group
+    const guessState = await GuessState.updateOne(
+      { groupId: req.params.id },
+      {
+        $set: {
+          winner: true,
+        },
+      }
+    );
+
+    return res.status(201).json({
+      success: true,
+      data: guessState,
+    });
+  } catch (error) {
+    (error) => console.log('Error', error);
+  }
+};
+
 // @desc    Get addGuessState
-// @route   Get /api/v1/transactions
+// @route   Get /api/v1/guessState/:groupID
 // @access  Public
 exports.getGuessState = async (req, res, next) => {
   try {
@@ -22,7 +47,7 @@ exports.getGuessState = async (req, res, next) => {
 };
 
 // @desc    Add addGuessState
-// @route   POST /api/v1/transactions
+// @route   POST /api/v1/guessState
 // @access  Public
 exports.addGuessState = async (req, res, next) => {
   try {
