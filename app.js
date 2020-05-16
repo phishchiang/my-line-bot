@@ -47,12 +47,43 @@ async function handleEvent(event) {
     return Promise.resolve(null);
   }
 
-  // keyword debug
+  // keyword debug_start
   if (event.message.text.toLowerCase().includes('debug_start')) {
     magicNum = Math.floor(Math.random() * 10);
     // const replyMsg = { type: 'text', text: 'debug mode' };
     const userProfile = await client.getProfile(event.source.userId);
     // return client.replyMessage(event.replyToken, replyMsg);
+
+    try {
+      // fetch data from a url endpoint
+      const data = await axios.post(
+        'https://line-bot-8421.herokuapp.com/api/v1/guessState',
+        {
+          groupId: event.source.groupId,
+          winner: false,
+          amount: magicNum,
+        },
+        configAxios
+      );
+      console.log(data.data);
+      const replyMsg = {
+        type: 'text',
+        text: `${userProfile.displayName}, ${data.data}`,
+      };
+      return client.replyMessage(event.replyToken, replyMsg);
+    } catch (error) {
+      console.log('error', error);
+      const replyMsg = {
+        type: 'text',
+        text: `${userProfile.displayName}, ${error}`,
+      };
+      return client.replyMessage(event.replyToken, replyMsg);
+    }
+  }
+
+  // keyword debug_guess
+  if (event.message.text.toLowerCase().includes('debug_start')) {
+    const userProfile = await client.getProfile(event.source.userId);
 
     try {
       // fetch data from a url endpoint
