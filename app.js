@@ -58,15 +58,15 @@ async function handleEvent(event) {
       const data = await axios.post(
         `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
       );
-      console.log(data.data);
+      console.log(event.message.text);
       magicNum = data.data.data[0].amount;
       const guessAnswer = guessRes(event.message.text, magicNum);
 
       const replyMsg = {
         type: 'text',
-        text: `${guessAnswer},${event.message.text} ,${guessAnswer} `,
+        text: `${guessAnswer},${event.message.text} `,
       };
-      return client.replyMessage(event.replyToken, magicNum);
+      return client.replyMessage(event.replyToken, replyMsg);
     } catch (error) {
       console.log('error', error);
       const replyMsg = {
