@@ -59,7 +59,7 @@ async function handleEvent(event) {
         `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
       );
       console.log(data.data);
-      magicNum = data.data[0].amount;
+      magicNum = data.data.data[0].amount;
       const replyMsg = {
         type: 'text',
         text: `${magicNum}`,
