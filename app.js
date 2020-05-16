@@ -92,7 +92,7 @@ async function handleEvent(event) {
   // keyword debug_start
   if (event.message.text.toLowerCase().includes('debug_start')) {
     const userProfile = await client.getProfile(event.source.userId);
-
+    magicNum = Math.floor(Math.random() * 10);
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
