@@ -48,8 +48,7 @@ async function handleEvent(event) {
   }
 
   // keyword debug_start
-  if (event.message.text.toLowerCase().includes('debug_start')) {
-    magicNum = Math.floor(Math.random() * 10);
+  if (event.message.text.toLowerCase().includes('debug_guess')) {
     // const replyMsg = { type: 'text', text: 'debug mode' };
     const userProfile = await client.getProfile(event.source.userId);
     // return client.replyMessage(event.replyToken, replyMsg);
@@ -57,18 +56,13 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
-        'https://line-bot-8421.herokuapp.com/api/v1/guessState',
-        {
-          groupId: event.source.groupId,
-          winner: false,
-          amount: magicNum,
-        },
-        configAxios
+        `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
       );
       console.log(data.data);
+      magicNum = data.data[0].amount;
       const replyMsg = {
         type: 'text',
-        text: `${userProfile.displayName}, ${data.data}`,
+        text: `${magicNum}`,
       };
       return client.replyMessage(event.replyToken, replyMsg);
     } catch (error) {
@@ -161,7 +155,7 @@ async function handleEvent(event) {
 }
 
 const guessRes = (guessNum) => {
-  guessNum = parseInt(guessNum.toLowerCase().split('guess')[1]);
+  guessNum = parseInt(guessNum.toLowerCase().split('debug_guess')[1]);
   if (guessNum > magicNum) {
     console.log('太大了');
     return '太大了';
