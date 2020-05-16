@@ -35,6 +35,7 @@ app.use('/api/v1/guessState', guessState);
 
 let magicNum = 0;
 let winner = false;
+let restart = false;
 const configAxios = {
   headers: {
     'Content-Type': 'application/json',
@@ -108,6 +109,29 @@ async function handleEvent(event) {
         type: 'text',
         text: `${userProfile.displayName}, ${data.data}`,
       };
+      return client.replyMessage(event.replyToken, replyMsg);
+    } catch (error) {
+      console.log('error', error);
+      const replyMsg = {
+        type: 'text',
+        text: `${userProfile.displayName}, ${error}`,
+      };
+      return client.replyMessage(event.replyToken, replyMsg);
+    }
+  }
+
+  // keyword debug_restart
+  if (event.message.text.toLowerCase().includes('debug_restart')) {
+    // const replyMsg = { type: 'text', text: 'debug mode' };
+    const userProfile = await client.getProfile(event.source.userId);
+    // return client.replyMessage(event.replyToken, replyMsg);
+
+    try {
+      // fetch data from a url endpoint
+      const data = await axios.post(
+        `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
+      );
+      const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
       return client.replyMessage(event.replyToken, replyMsg);
     } catch (error) {
       console.log('error', error);
