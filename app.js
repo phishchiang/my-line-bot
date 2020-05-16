@@ -60,11 +60,13 @@ async function handleEvent(event) {
       );
       console.log(data.data);
       magicNum = data.data.data[0].amount;
+      const guessAnswer = guessRes(event.message.text, magicNum);
+
       const replyMsg = {
         type: 'text',
-        text: `${magicNum}`,
+        text: `${guessAnswer},${event.message.text} ,${guessAnswer} `,
       };
-      return client.replyMessage(event.replyToken, replyMsg);
+      return client.replyMessage(event.replyToken, magicNum);
     } catch (error) {
       console.log('error', error);
       const replyMsg = {
@@ -129,7 +131,7 @@ async function handleEvent(event) {
 
   // keyword guess
   if (event.message.text.toLowerCase().includes('guess') && winner == false) {
-    const guessAnswer = guessRes(event.message.text, magicNum, winner);
+    const guessAnswer = guessRes(event.message.text);
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
     const replyMsg = {
@@ -154,7 +156,7 @@ async function handleEvent(event) {
   }
 }
 
-const guessRes = (guessNum) => {
+const guessRes = (guessNum, magicNum) => {
   guessNum = parseInt(guessNum.toLowerCase().split('debug_guess')[1]);
   if (guessNum > magicNum) {
     console.log('太大了');
