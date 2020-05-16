@@ -51,7 +51,7 @@ async function handleEvent(event) {
   if (event.message.text.toLowerCase().includes('debug')) {
     magicNum = Math.floor(Math.random() * 10);
     const replyMsg = { type: 'text', text: 'debug mode' };
-    return client.replyMessage(event.replyToken, replyMsg);
+    // return client.replyMessage(event.replyToken, replyMsg);
 
     try {
       // fetch data from a url endpoint
