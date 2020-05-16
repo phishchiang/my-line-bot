@@ -129,7 +129,8 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
-        `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
+        `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`,
+        { restart: true }
       );
       const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
       return client.replyMessage(event.replyToken, replyMsg);
