@@ -67,7 +67,6 @@ async function handleEvent(event) {
             `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
           );
           console.log(data);
-          const guessAnswer = guessRes(data);
         } catch (error) {
           console.log('error', error);
           return client.replyMessage(event.replyToken, error);
