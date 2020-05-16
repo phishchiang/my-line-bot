@@ -5,12 +5,12 @@ const GuessState = require('../models/guessVal');
 // @access  Public
 exports.getGuessState = async (req, res, next) => {
   try {
+    // const { groupId } = req.body;
     // get the latest one from the group
     const guessState = await GuessState.find({
-      groupId: 'C3f76f74a2efc9c787e0aafe799af5015',
-    })
-      .sort({ createdAt: -1 })
-      .limit(1);
+      groupId: req.params.id,
+    }).sort({ createdAt: -1 });
+    // .limit(1);
 
     return res.status(201).json({
       success: true,
