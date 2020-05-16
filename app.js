@@ -48,9 +48,10 @@ async function handleEvent(event) {
   }
 
   // keyword debug
-  if (event.message.text.toLowerCase().includes('debug')) {
+  if (event.message.text.toLowerCase().includes('debug_start')) {
     magicNum = Math.floor(Math.random() * 10);
-    const replyMsg = { type: 'text', text: 'debug mode' };
+    // const replyMsg = { type: 'text', text: 'debug mode' };
+    const userProfile = await client.getProfile(userId);
     // return client.replyMessage(event.replyToken, replyMsg);
 
     try {
