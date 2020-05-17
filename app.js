@@ -183,10 +183,10 @@ async function handleEvent(event) {
   if (event.message.text.toLowerCase().includes('lala')) {
     const echoMsg = event.message.text.toLowerCase().split('lala').join(' ');
     const userId = event.source.userId;
-    const userProfile = await client.getProfile(userId);
+    // const userProfile = await client.getProfile(userId);
     const replyMsg = {
       type: 'text',
-      text: `${userProfile.displayName}, ${echoMsg}`,
+      text: `偶縮, ${echoMsg}`,
     };
     console.log(event);
     return client.replyMessage(event.replyToken, replyMsg);
