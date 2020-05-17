@@ -94,30 +94,56 @@ async function handleEvent(event) {
   if (event.message.text.toLowerCase().includes('debug_start')) {
     const userProfile = await client.getProfile(event.source.userId);
     magicNum = Math.floor(Math.random() * 10);
-    try {
-      // fetch data from a url endpoint
-      const data = await axios.post(
-        'https://line-bot-8421.herokuapp.com/api/v1/guessState',
-        {
-          groupId: event.source.groupId,
-          winner: false,
-          amount: magicNum,
-        },
-        configAxios
-      );
-      console.log(data.data);
-      const replyMsg = {
-        type: 'text',
-        text: `${userProfile.displayName}, ${data.data}`,
-      };
-      return client.replyMessage(event.replyToken, replyMsg);
-    } catch (error) {
-      console.log('error', error);
-      const replyMsg = {
-        type: 'text',
-        text: `${userProfile.displayName}, ${error}`,
-      };
-      return client.replyMessage(event.replyToken, replyMsg);
+
+    // fetch data from a url endpoint
+    const data = await axios.post(
+      `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
+    );
+    console.log(data.data);
+    if (data.data.data) {
+      try {
+        // fetch data from a url endpoint
+        const data = await axios.put(
+          `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`,
+          { restart: true }
+        );
+        const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
+        console.log(data);
+        return client.replyMessage(event.replyToken, replyMsg);
+      } catch (error) {
+        console.log('error', error);
+        const replyMsg = {
+          type: 'text',
+          text: `${userProfile.displayName}, ${error}`,
+        };
+        return client.replyMessage(event.replyToken, replyMsg);
+      }
+    } else {
+      try {
+        // fetch data from a url endpoint
+        const data = await axios.post(
+          'https://line-bot-8421.herokuapp.com/api/v1/guessState',
+          {
+            groupId: event.source.groupId,
+            winner: false,
+            amount: magicNum,
+          },
+          configAxios
+        );
+        console.log(data.data);
+        const replyMsg = {
+          type: 'text',
+          text: `${userProfile.displayName}, ${data.data}`,
+        };
+        return client.replyMessage(event.replyToken, replyMsg);
+      } catch (error) {
+        console.log('error', error);
+        const replyMsg = {
+          type: 'text',
+          text: `${userProfile.displayName}, ${error}`,
+        };
+        return client.replyMessage(event.replyToken, replyMsg);
+      }
     }
   }
 
