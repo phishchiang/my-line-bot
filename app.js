@@ -78,7 +78,7 @@ async function handleEvent(event) {
 
         const replyMsg = {
           type: 'text',
-          text: `${userProfile.displayName},${guessAnswer}!${event.message.text} `,
+          text: `${userProfile.displayName},${guessAnswer}!`,
         };
         return client.replyMessage(event.replyToken, replyMsg);
       } else {
@@ -141,7 +141,7 @@ async function handleEvent(event) {
         console.log(data.data);
         const replyMsg = {
           type: 'text',
-          text: `${userProfile.displayName}, ${data.data}`,
+          text: `${userProfile.displayName}, 猜數字遊戲開始!!`,
         };
         return client.replyMessage(event.replyToken, replyMsg);
       } catch (error) {
