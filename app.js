@@ -49,7 +49,7 @@ async function handleEvent(event) {
   }
 
   // keyword debug_guess
-  if (event.message.text.toLowerCase().includes('debug_guess')) {
+  if (event.message.text.toLowerCase().includes('guess')) {
     // const replyMsg = { type: 'text', text: 'debug mode' };
     const userProfile = await client.getProfile(event.source.userId);
     // return client.replyMessage(event.replyToken, replyMsg);
@@ -99,7 +99,7 @@ async function handleEvent(event) {
   }
 
   // keyword debug_start
-  if (event.message.text.toLowerCase().includes('debug_start')) {
+  if (event.message.text.toLowerCase().includes('start')) {
     const userProfile = await client.getProfile(event.source.userId);
     magicNum = Math.floor(Math.random() * 10);
 
@@ -156,7 +156,7 @@ async function handleEvent(event) {
   }
 
   // keyword debug_restart
-  if (event.message.text.toLowerCase().includes('debug_restart')) {
+  if (event.message.text.toLowerCase().includes('restart')) {
     // const replyMsg = { type: 'text', text: 'debug mode' };
     const userProfile = await client.getProfile(event.source.userId);
     // return client.replyMessage(event.replyToken, replyMsg);
@@ -193,6 +193,7 @@ async function handleEvent(event) {
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
+  /*
   // keyword restart
   if (event.message.text.toLowerCase().includes('restart')) {
     magicNum = Math.floor(Math.random() * 100);
@@ -201,6 +202,7 @@ async function handleEvent(event) {
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
+  
   // keyword guess
   if (event.message.text.toLowerCase().includes('guess') && winner == false) {
     const guessAnswer = guessRes(event.message.text);
@@ -226,10 +228,11 @@ async function handleEvent(event) {
 
     return client.replyMessage(event.replyToken, replyMsg);
   }
+  */
 }
 
 const guessRes = (guessNum, magicNum) => {
-  guessNum = parseInt(guessNum.toLowerCase().split('debug_guess')[1]);
+  guessNum = parseInt(guessNum.toLowerCase().split('guess')[1]);
   if (guessNum > magicNum) {
     console.log('太大了');
     return '太大了';
@@ -246,92 +249,3 @@ const guessRes = (guessNum, magicNum) => {
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-
-/*
-const linebot = require('linebot');
-const express = require('express');
-const dotenv = require('dotenv');
-const Transaction = require('./models/guessVal');
-dotenv.config({ path: './config/config.env' });
-const connectDB = require('./config/db');
-connectDB();
-
-const bot = linebot({
-  channelId: process.env.CHANNEL_ID,
-  channelSecret: process.env.CHANNEL_SECRET,
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
-  verify: true,
-});
-
-const app = express();
-const linebotParser = bot.parser();
-app.post('/', linebotParser);
-
-let myData = {
-  text: 'Good',
-  amount: 50,
-};
-// POST method route
-app.post('/guess', async (req, res) => {
-  try {
-    const transaction = await Transaction.create(myData);
-    return res.status(201).json({
-      success: true,
-      data: transaction,
-    });
-  } catch (error) {
-    (error) => console.log('Error', error);
-  }
-});
-
-let magicNum = 0;
-bot.on('message', function (event) {
-  console.log(event);
-
-  if (event.message.text.toLowerCase().includes('lala')) {
-    const removeLalaMsg = event.message.text
-      .toLowerCase()
-      .split('lala')
-      .join(' ');
-    const replyMsg = `偶縮 :${removeLalaMsg}`;
-    event
-      .reply(replyMsg)
-      .then((data) => console.log('Success', data))
-      .catch((error) => console.log('Error', error));
-  }
-
-  if (event.message.text.toLowerCase().includes('restart')) {
-    magicNum = Math.floor(Math.random() * 100);
-    const replyMsg = '偶縮 : 重新洗牌了!!開始!!';
-    event.reply(replyMsg);
-  }
-
-  if (event.message.text.toLowerCase().includes('guess')) {
-    const removeLalaMsg = guessRes(event.message.text);
-    const replyMsg = `偶縮 :${removeLalaMsg}`;
-    event
-      .reply(replyMsg)
-      .then((data) => console.log('Success', data))
-      .catch((error) => console.log('Error', error));
-  }
-});
-
-function guessRes(guessNum) {
-  guessNum = parseInt(guessNum.toLowerCase().split('guess')[1]);
-  if (guessNum > magicNum) {
-    console.log('太大了');
-    return '太大了';
-  } else if (guessNum < magicNum) {
-    console.log('太小了');
-    return '太小了';
-  } else if (guessNum === magicNum) {
-    console.log('答對了!!');
-    return '答對了!!';
-  }
-}
-
-
-const PORT = process.env.PORT || 8080;
-
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-*/
