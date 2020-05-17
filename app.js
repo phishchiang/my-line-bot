@@ -133,6 +133,7 @@ async function handleEvent(event) {
         { restart: true }
       );
       const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
+      console.log(data);
       return client.replyMessage(event.replyToken, replyMsg);
     } catch (error) {
       console.log('error', error);
