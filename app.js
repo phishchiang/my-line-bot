@@ -128,7 +128,7 @@ async function handleEvent(event) {
 
     try {
       // fetch data from a url endpoint
-      const data = await axios.post(
+      const data = await axios.put(
         `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`,
         { restart: true }
       );
