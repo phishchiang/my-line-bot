@@ -59,7 +59,7 @@ async function handleEvent(event) {
       const data = await axios.post(
         `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
       );
-      magicNum = data.data;
+      magicNum = data.data[0].amount;
       const guessAnswer = guessRes(event.message.text, magicNum);
       console.log(magicNum);
       // if no data guessAnswer === undefined
@@ -75,13 +75,13 @@ async function handleEvent(event) {
         }
       }
 
-      // if (guessAnswer === undefined) {
-      //   const replyMsg = {
-      //     type: 'text',
-      //     text: '遊戲尚未開始',
-      //   };
-      //   return client.replyMessage(event.replyToken, replyMsg);
-      // }
+      if (guessAnswer === undefined) {
+        const replyMsg = {
+          type: 'text',
+          text: '遊戲尚未開始',
+        };
+        return client.replyMessage(event.replyToken, replyMsg);
+      }
 
       const replyMsg = {
         type: 'text',
