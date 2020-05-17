@@ -59,9 +59,10 @@ async function handleEvent(event) {
       const data = await axios.post(
         `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
       );
-      console.log(event.message.text);
+      console.log(data.data);
       magicNum = data.data;
       const guessAnswer = guessRes(event.message.text, magicNum);
+      // if no data guessAnswer === undefined
       if (guessAnswer === '答對了') {
         try {
           const data = await axios.put(
