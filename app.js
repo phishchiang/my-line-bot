@@ -59,35 +59,35 @@ async function handleEvent(event) {
       const data = await axios.post(
         `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
       );
-      magicNum = data.data.data[0].amount;
-      const guessAnswer = guessRes(event.message.text, magicNum);
-      console.log(magicNum);
-      // if no data guessAnswer === undefined
-      if (guessAnswer === '答對了') {
-        try {
-          const data = await axios.put(
-            `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
-          );
-          console.log(data);
-        } catch (error) {
-          console.log('error', error);
-          return client.replyMessage(event.replyToken, error);
+      if (data.data.data.length) {
+        magicNum = data.data.data[0].amount;
+        const guessAnswer = guessRes(event.message.text, magicNum);
+        console.log(magicNum);
+        // if no data guessAnswer === undefined
+        if (guessAnswer === '答對了') {
+          try {
+            const data = await axios.put(
+              `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
+            );
+            console.log(data);
+          } catch (error) {
+            console.log('error', error);
+            return client.replyMessage(event.replyToken, error);
+          }
         }
-      }
 
-      if (guessAnswer === undefined) {
+        const replyMsg = {
+          type: 'text',
+          text: `${userProfile.displayName},${guessAnswer}!${event.message.text} `,
+        };
+        return client.replyMessage(event.replyToken, replyMsg);
+      } else {
         const replyMsg = {
           type: 'text',
           text: '遊戲尚未開始',
         };
         return client.replyMessage(event.replyToken, replyMsg);
       }
-
-      const replyMsg = {
-        type: 'text',
-        text: `${userProfile.displayName},${guessAnswer}!${event.message.text} `,
-      };
-      return client.replyMessage(event.replyToken, replyMsg);
     } catch (error) {
       console.log('error', error);
       const replyMsg = {
