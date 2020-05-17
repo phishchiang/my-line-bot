@@ -85,7 +85,7 @@ async function handleEvent(event) {
 
       const replyMsg = {
         type: 'text',
-        text: `${guessAnswer},${event.message.text} `,
+        text: `${userProfile.displayName},${guessAnswer}!${event.message.text} `,
       };
       return client.replyMessage(event.replyToken, replyMsg);
     } catch (error) {
