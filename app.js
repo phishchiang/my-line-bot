@@ -75,13 +75,13 @@ async function handleEvent(event) {
         }
       }
 
-      if (guessAnswer === undefined) {
-        const replyMsg = {
-          type: 'text',
-          text: '遊戲尚未開始',
-        };
-        return client.replyMessage(event.replyToken, replyMsg);
-      }
+      // if (guessAnswer === undefined) {
+      //   const replyMsg = {
+      //     type: 'text',
+      //     text: '遊戲尚未開始',
+      //   };
+      //   return client.replyMessage(event.replyToken, replyMsg);
+      // }
 
       const replyMsg = {
         type: 'text',
