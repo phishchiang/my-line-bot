@@ -42,7 +42,7 @@ const configAxios = {
 };
 // event handler
 async function handleEvent(event) {
-  console.log(event);
+  // console.log(event);
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
   }
@@ -188,7 +188,7 @@ async function handleEvent(event) {
       type: 'text',
       text: `${userProfile.displayName}, ${echoMsg}`,
     };
-
+    console.log(event);
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
