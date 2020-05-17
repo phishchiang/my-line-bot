@@ -61,7 +61,7 @@ async function handleEvent(event) {
       );
       magicNum = data.data.amount;
       const guessAnswer = guessRes(event.message.text, magicNum);
-      console.log(guessAnswer);
+      console.log(magicNum);
       // if no data guessAnswer === undefined
       if (guessAnswer === '答對了') {
         try {
