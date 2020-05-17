@@ -2,13 +2,12 @@ const express = require('express');
 const line = require('@line/bot-sdk');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
-const Transaction = require('./models/guessVal');
 const axios = require('axios');
-// const guessRes = require('./utlis/parseGuess');
 const connectDB = require('./config/db');
 connectDB();
 
 const config = {
+  channelId: process.env.CHANNEL_ID,
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.CHANNEL_SECRET,
 };
