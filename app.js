@@ -60,7 +60,7 @@ async function handleEvent(event) {
         `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
       );
       console.log(event.message.text);
-      magicNum = data.data.data[0].amount;
+      magicNum = data.data;
       const guessAnswer = guessRes(event.message.text, magicNum);
       if (guessAnswer === '答對了') {
         try {
