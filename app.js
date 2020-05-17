@@ -75,6 +75,14 @@ async function handleEvent(event) {
         }
       }
 
+      if (guessAnswer === undefined) {
+        const replyMsg = {
+          type: 'text',
+          text: '遊戲尚未開始',
+        };
+        return client.replyMessage(event.replyToken, replyMsg);
+      }
+
       const replyMsg = {
         type: 'text',
         text: `${guessAnswer},${event.message.text} `,
@@ -100,7 +108,7 @@ async function handleEvent(event) {
       `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
     );
     console.log(data.data);
-    if (data.data.data) {
+    if (data.data.data.length) {
       try {
         // fetch data from a url endpoint
         const data = await axios.put(
