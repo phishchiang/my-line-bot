@@ -29,7 +29,7 @@ app.post('/', line.middleware(config), (req, res) => {
     });
 });
 
-// app.use(express.json());
+app.use(express.json());
 app.use('/api/v1/guessState', guessState);
 
 let magicNum = 0;
