@@ -15,6 +15,7 @@
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "johnny-five": "^1.4.0",
     "linebot": "^1.5.3",
     "mongoose": "^5.9.13"
   },
