@@ -44,7 +44,7 @@ function boardHandler() {
   app.post('/callback', line.middleware(config), (req, res) => {
     Promise.all(req.body.events.map(handleEvent))
       .then((result) => {
-        console.log(req.body.events);
+        // console.log(req.body.events);
         res.json(result);
       })
       .catch((err) => {
@@ -64,6 +64,7 @@ function boardHandler() {
       'Content-Type': 'application/json',
     },
   };
+  let tempIntervalId;
 
   // event handler
   async function handleEvent(event) {
@@ -79,48 +80,75 @@ function boardHandler() {
       return Promise.resolve(null);
     }
 
+    // test push message
+    if (event.message.text.toLowerCase().includes('monitor')) {
+      const command = event.message.text.toLowerCase().split(' ')[1];
+
+      if (command === 'on') {
+        let i = 0;
+        tempIntervalId = setInterval(() => {
+          console.log(i);
+          const message = {
+            type: 'text',
+            text: `開始監控了!!! 持續${i}秒鐘~`,
+          };
+          client.pushMessage(event.source.groupId, message);
+          // console.log(event);
+          i += 3;
+        }, 3000);
+      }
+      if (command === 'off') {
+        clearInterval(tempIntervalId);
+        // console.log(tempIntervalId);
+        const message = {
+          type: 'text',
+          text: `結束監控!!`,
+        };
+        client.pushMessage(event.source.groupId, message);
+      }
+    }
+
     // keyword light
     if (event.message.text.toLowerCase().includes('light')) {
+      let replyMsg;
       const echoMsg = event.message.text.toLowerCase().split('light').join(' ');
       const userId = event.source.userId;
       const command = event.message.text.toLowerCase().split(' ')[1];
       if (Object.keys(led_colors).includes(command)) {
         // commands[command](msg, args);
         led.color(`${led_colors[command]}`);
+        replyMsg = {
+          type: 'text',
+          text: `燈變${command}了`,
+        };
       }
 
       if (command === 'blink') {
         led.blink(500);
+        replyMsg = {
+          type: 'text',
+          text: `燈閃爍了`,
+        };
       }
 
       if (command === 'on') {
         led.stop();
         led.color('FFFFFF');
+        replyMsg = {
+          type: 'text',
+          text: `燈開了`,
+        };
       }
 
       if (command === 'off') {
         led.color('000000');
         led.stop();
+        replyMsg = {
+          type: 'text',
+          text: `燈關了`,
+        };
       }
 
-      // const userProfile = await client.getProfile(userId);
-      const replyMsg = {
-        type: 'text',
-        text: `燈變成light`,
-      };
-      console.log(event);
-      return client.replyMessage(event.replyToken, replyMsg);
-    }
-    // keyword off
-    if (event.message.text.toLowerCase().includes('off')) {
-      const echoMsg = event.message.text.toLowerCase().split('off').join(' ');
-      const userId = event.source.userId;
-      led.color('#000000');
-      // const userProfile = await client.getProfile(userId);
-      const replyMsg = {
-        type: 'text',
-        text: `燈變成off`,
-      };
       console.log(event);
       return client.replyMessage(event.replyToken, replyMsg);
     }
@@ -269,43 +297,6 @@ function boardHandler() {
       console.log(event);
       return client.replyMessage(event.replyToken, replyMsg);
     }
-
-    /*
-  // keyword restart
-  if (event.message.text.toLowerCase().includes('restart')) {
-    magicNum = Math.floor(Math.random() * 100);
-    const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
-    winner = false;
-    return client.replyMessage(event.replyToken, replyMsg);
-  }
-
-  
-  // keyword guess
-  if (event.message.text.toLowerCase().includes('guess') && winner == false) {
-    const guessAnswer = guessRes(event.message.text);
-    const userId = event.source.userId;
-    const userProfile = await client.getProfile(userId);
-    const replyMsg = {
-      type: 'text',
-      text: `${userProfile.displayName}, ${guessAnswer}`,
-    };
-
-    return client.replyMessage(event.replyToken, replyMsg);
-  }
-
-  // keyword guess WINNER
-  if (event.message.text.toLowerCase().includes('guess') && winner == true) {
-    const guessAnswer = '遊戲結束';
-    const userId = event.source.userId;
-    const userProfile = await client.getProfile(userId);
-    const replyMsg = {
-      type: 'text',
-      text: `${userProfile.displayName}, ${guessAnswer}`,
-    };
-
-    return client.replyMessage(event.replyToken, replyMsg);
-  }
-  */
   }
 
   // led.blink(1000);
