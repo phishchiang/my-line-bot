@@ -21,7 +21,7 @@ https://line-bot-8421.herokuapp.com/
 
 I still have heroku server depolyment but just for test purpose.
 
-Usage
+## Usage
 
 ---
 
