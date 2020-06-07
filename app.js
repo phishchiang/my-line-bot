@@ -158,10 +158,6 @@ async function handleEvent(event) {
 
   // keyword debug_guess
   if (event.message.text.toLowerCase().includes('guess')) {
-    // const replyMsg = { type: 'text', text: 'debug mode' };
-    const userProfile = await client.getProfile(event.source.userId);
-    // return client.replyMessage(event.replyToken, replyMsg);
-
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
@@ -186,7 +182,7 @@ async function handleEvent(event) {
 
         const replyMsg = {
           type: 'text',
-          text: `${userProfile.displayName},${guessAnswer}!`,
+          text: `${guessAnswer}!`,
         };
         return client.replyMessage(event.replyToken, replyMsg);
       } else {
@@ -208,7 +204,7 @@ async function handleEvent(event) {
 
   // keyword debug_start
   if (event.message.text.toLowerCase().includes('start')) {
-    const userProfile = await client.getProfile(event.source.userId);
+    // const userProfile = await client.getProfile(event.source.userId);
     magicNum = Math.floor(Math.random() * 10);
 
     // fetch data from a url endpoint
@@ -230,7 +226,7 @@ async function handleEvent(event) {
         console.log('error', error);
         const replyMsg = {
           type: 'text',
-          text: `${userProfile.displayName}, ${error}`,
+          text: `${error}`,
         };
         return client.replyMessage(event.replyToken, replyMsg);
       }
@@ -249,14 +245,14 @@ async function handleEvent(event) {
         console.log(data.data);
         const replyMsg = {
           type: 'text',
-          text: `${userProfile.displayName}, 猜數字遊戲開始!!`,
+          text: `猜數字遊戲開始!!`,
         };
         return client.replyMessage(event.replyToken, replyMsg);
       } catch (error) {
         console.log('error', error);
         const replyMsg = {
           type: 'text',
-          text: `${userProfile.displayName}, ${error}`,
+          text: ` ${error}`,
         };
         return client.replyMessage(event.replyToken, replyMsg);
       }
@@ -265,10 +261,6 @@ async function handleEvent(event) {
 
   // keyword debug_restart
   if (event.message.text.toLowerCase().includes('restart')) {
-    // const replyMsg = { type: 'text', text: 'debug mode' };
-    const userProfile = await client.getProfile(event.source.userId);
-    // return client.replyMessage(event.replyToken, replyMsg);
-
     try {
       // fetch data from a url endpoint
       const data = await axios.put(
@@ -282,7 +274,7 @@ async function handleEvent(event) {
       console.log('error', error);
       const replyMsg = {
         type: 'text',
-        text: `${userProfile.displayName}, ${error}`,
+        text: ` ${error}`,
       };
       return client.replyMessage(event.replyToken, replyMsg);
     }

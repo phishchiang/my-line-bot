@@ -9,7 +9,7 @@ const guessRes = (guessNum, magicNum) => {
   } else if (guessNum === magicNum) {
     console.log('答對了');
     winner = true;
-    return '答對了';
+    return `答對了，答案是${guessNum}!!`;
   }
 };
 
