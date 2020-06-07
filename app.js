@@ -32,9 +32,7 @@ const client = new line.Client(config);
 
 const app = express();
 
-board.on('ready', boardHandler);
-
-function boardHandler() {
+const boardHandler = () => {
   // Initialize the RGB LED
   led = new five.Led.RGB({
     pins: {
@@ -65,7 +63,9 @@ function boardHandler() {
 
   app.use(express.json());
   app.use('/api/v1/guessState', guessState);
-}
+};
+
+board.on('ready', boardHandler);
 
 const { guessRes } = require('./guessRes');
 
