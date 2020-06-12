@@ -53,11 +53,53 @@ const boardHandler = () => {
     pin: 'A0',
   });
 
-  temperature.on('data', function () {
-    console.log('celsius: %d', this.C);
-    // console.log('fahrenheit: %d', this.F);
-    // console.log('kelvin: %d', this.K);
-  });
+  // function debounce(func, wait, immediate) {
+  //   var timeout;
+  //   return function () {
+  //     var context = this,
+  //       args = arguments;
+  //     var later = function () {
+  //       timeout = null;
+  //       if (!immediate) func.apply(context, args);
+  //     };
+  //     var callNow = immediate && !timeout;
+  //     clearTimeout(timeout);
+  //     timeout = setTimeout(later, wait);
+  //     if (callNow) func.apply(context, args);
+  //   };
+  // }
+
+  function throttle(func, timeout = 250) {
+    let last;
+    let timer;
+
+    return function () {
+      const context = this;
+      const args = arguments;
+      const now = +new Date();
+
+      if (last && now < last + timeout) {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          last = now;
+          func.apply(context, args);
+        }, timeout);
+      } else {
+        last = now;
+        func.apply(context, args);
+      }
+    };
+  }
+
+  var myEfficientFn = () => {
+    // All the taxing stuff you do
+    console.log('debounce!!!');
+  };
+
+  // temperature.on('data', function () {
+  //   throttle(myEfficientFn);
+  // });
+  temperature.on('data', throttle(myEfficientFn));
 
   // register a webhook handler with middleware
   app.post('/callback', line.middleware(config), (req, res) => {
