@@ -48,6 +48,17 @@ const boardHandler = () => {
   led.on();
   led.color('#000000');
 
+  let temperature = new five.Thermometer({
+    controller: 'TMP36',
+    pin: 'A0',
+  });
+
+  temperature.on('data', function () {
+    console.log('celsius: %d', this.C);
+    // console.log('fahrenheit: %d', this.F);
+    // console.log('kelvin: %d', this.K);
+  });
+
   // register a webhook handler with middleware
   app.post('/callback', line.middleware(config), (req, res) => {
     Promise.all(req.body.events.map(handleEvent))
