@@ -8,7 +8,7 @@ connectDB();
 
 const five = require('johnny-five');
 const board = new five.Board();
-let led, tempIntervalId;
+let led, tempIntervalId, bodyTemp;
 // let magicNum = 0;
 // let winner = false;
 // let restart = false;
@@ -29,6 +29,7 @@ const configAxios = {
 };
 
 const guessState = require('./routes/guessState');
+const tempState = require('./routes/tempState');
 
 // create LINE SDK client
 const client = new line.Client(config);
@@ -59,6 +60,7 @@ const boardHandler = () => {
 
   temperature.on('data', () => {
     console.log(temperature.C);
+    bodyTemp = temperature.C;
   });
 
   // register a webhook handler with middleware
@@ -76,6 +78,7 @@ const boardHandler = () => {
 
   app.use(express.json());
   app.use('/api/v1/guessState', guessState);
+  app.use('/api/v1/tempState', tempState);
 };
 
 board.on('ready', boardHandler);
