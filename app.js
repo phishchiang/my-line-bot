@@ -12,6 +12,9 @@ let led, tempIntervalId;
 // let magicNum = 0;
 // let winner = false;
 // let restart = false;
+const AXIOS_URL_LOCAL = 'http://localhost:8080/api/v1/guessState/';
+const AXIOS_URL_REMOTE =
+  'https://line-bot-8421.herokuapp.com/api/v1/guessState/';
 
 const config = {
   channelId: process.env.CHANNEL_ID,
@@ -171,7 +174,7 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.post(
-        `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
+        `${AXIOS_URL_LOCAL}${event.source.groupId}`
       );
       if (data.data.data.length) {
         magicNum = data.data.data[0].amount;
@@ -181,7 +184,7 @@ async function handleEvent(event) {
         if (guessAnswer === '答對了') {
           try {
             const data = await axios.put(
-              `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
+              `${AXIOS_URL_LOCAL}${event.source.groupId}`
             );
             console.log(data);
           } catch (error) {
@@ -218,16 +221,16 @@ async function handleEvent(event) {
     magicNum = Math.floor(Math.random() * 10);
 
     // fetch data from a url endpoint
-    const data = await axios.post(
-      `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`
-    );
+    const data = await axios.post(`${AXIOS_URL_LOCAL}${event.source.groupId}`);
     console.log(data.data.data);
     if (data.data.data.length) {
       try {
         // fetch data from a url endpoint
         const data = await axios.put(
-          `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`,
-          { restart: true }
+          `${AXIOS_URL_LOCAL}${event.source.groupId}`,
+          {
+            restart: true,
+          }
         );
         const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
         console.log(data);
@@ -244,7 +247,7 @@ async function handleEvent(event) {
       try {
         // fetch data from a url endpoint
         const data = await axios.post(
-          'https://line-bot-8421.herokuapp.com/api/v1/guessState',
+          `${AXIOS_URL_LOCAL}`,
           {
             groupId: event.source.groupId,
             winner: false,
@@ -274,8 +277,10 @@ async function handleEvent(event) {
     try {
       // fetch data from a url endpoint
       const data = await axios.put(
-        `https://line-bot-8421.herokuapp.com/api/v1/guessState/${event.source.groupId}`,
-        { restart: true }
+        `${AXIOS_URL_LOCAL}${event.source.groupId}`,
+        {
+          restart: true,
+        }
       );
       const replyMsg = { type: 'text', text: '重新洗牌了!!開始!!' };
       console.log(data);
