@@ -310,6 +310,20 @@ async function handleEvent(event) {
     }
   }
 
+  // keyword temp
+  if (event.message.text.toLowerCase().includes('temp')) {
+    const echoMsg = event.message.text.toLowerCase().split('temp').join(' ');
+    const userId = event.source.userId;
+    const data = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+    const temp = data.data.data[0].temp;
+    const replyMsg = {
+      type: 'text',
+      text: `北魚現在體溫攝氏 ${temp} 度`,
+    };
+    console.log(data.data.data[0].temp);
+    return client.replyMessage(event.replyToken, replyMsg);
+  }
+
   // keyword lala
   if (event.message.text.toLowerCase().includes('lala')) {
     const echoMsg = event.message.text.toLowerCase().split('lala').join(' ');
