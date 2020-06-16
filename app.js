@@ -109,34 +109,6 @@ async function handleEvent(event) {
     return Promise.resolve(null);
   }
 
-  // test push message
-  if (event.message.text.toLowerCase().includes('monitor')) {
-    const command = event.message.text.toLowerCase().split(' ')[1];
-
-    if (command === 'on') {
-      let i = 0;
-      tempIntervalId = setInterval(() => {
-        console.log(i);
-        const message = {
-          type: 'text',
-          text: `開始監控了!!! 持續${i}秒鐘~`,
-        };
-        client.pushMessage(event.source.groupId, message);
-        // console.log(event);
-        i += 3;
-      }, 3000);
-    }
-    if (command === 'off') {
-      clearInterval(tempIntervalId);
-      // console.log(tempIntervalId);
-      const message = {
-        type: 'text',
-        text: `結束監控!!`,
-      };
-      client.pushMessage(event.source.groupId, message);
-    }
-  }
-
   // keyword light
   if (event.message.text.toLowerCase().includes('light')) {
     let replyMsg;
@@ -312,16 +284,55 @@ async function handleEvent(event) {
 
   // keyword temp
   if (event.message.text.toLowerCase().includes('temp')) {
-    const echoMsg = event.message.text.toLowerCase().split('temp').join(' ');
-    const userId = event.source.userId;
     const data = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
     const temp = data.data.data[0].temp;
-    const replyMsg = {
-      type: 'text',
-      text: `北魚現在體溫攝氏 ${temp} 度`,
-    };
+    let replyMsg;
+    if (temp < 38) {
+      replyMsg = {
+        type: 'text',
+        text: `現在體溫攝氏 ${temp} 度，沒有發燒`,
+      };
+    } else {
+      replyMsg = {
+        type: 'text',
+        text: `現在體溫攝氏 ${temp} 度，發燒了喔!!`,
+      };
+    }
+
     console.log(data.data.data[0].temp);
     return client.replyMessage(event.replyToken, replyMsg);
+  }
+
+  // test push message
+  if (event.message.text.toLowerCase().includes('monitor')) {
+    const command = event.message.text.toLowerCase().split(' ')[1];
+
+    async function IntervalFunc() {
+      // console.log(i);
+      const data = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+      const temp = await data.data.data[0].temp;
+      const message = {
+        type: 'text',
+        text: `開始監控體溫!!! 現在體溫為${temp}度~`,
+      };
+      client.pushMessage(event.source.groupId, message);
+      // console.log(event);
+      // i += 3;
+    }
+
+    if (command === 'on') {
+      IntervalFunc();
+      tempIntervalId = setInterval(IntervalFunc, 5000);
+    }
+    if (command === 'off') {
+      clearInterval(tempIntervalId);
+      // console.log(tempIntervalId);
+      const message = {
+        type: 'text',
+        text: `結束瘋狂監控!!`,
+      };
+      client.pushMessage(event.source.groupId, message);
+    }
   }
 
   // keyword lala
