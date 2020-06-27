@@ -38,7 +38,7 @@ const client = new line.Client(config);
 
 const app = express();
 
-const boardHandler = () => {
+function boardHandler() {
   // Initialize the RGB LED
   led = new five.Led.RGB({
     pins: {
@@ -78,6 +78,9 @@ const boardHandler = () => {
   });
 
   // Neo Pixel
+  const fps = 20;
+  const feverTemp = 36;
+
   const strip = new pixel.Strip({
     // data: 6,
     length: 30,
@@ -88,10 +91,18 @@ const boardHandler = () => {
   strip.on('ready', function () {
     console.log("Strip ready, let's go");
 
-    var colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'white'];
-    var current_colors = [0, 1, 2, 3, 4];
-    var current_pos = [0, 1, 2, 3, 4];
-    var blinker = setInterval(function () {
+    const colors = [
+      'red',
+      'green',
+      'blue',
+      'yellow',
+      'cyan',
+      'magenta',
+      'white',
+    ];
+    const current_colors = [0, 1, 2, 3, 4];
+    const current_pos = [0, 1, 2, 3, 4];
+    const blinker = setInterval(function () {
       strip.color('#000'); // blanks it out
       if (bodyTemp >= feverTemp) {
         strip.color('#FF0000'); // blanks it out
@@ -121,7 +132,7 @@ const boardHandler = () => {
   app.use(express.json());
   app.use('/api/v1/guessState', guessState);
   app.use('/api/v1/tempState', tempState);
-};
+}
 
 board.on('ready', boardHandler);
 
