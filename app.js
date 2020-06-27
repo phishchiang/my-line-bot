@@ -6,6 +6,7 @@ const axios = require('axios');
 const connectDB = require('./config/db');
 connectDB();
 
+const pixel = require('node-pixel');
 const five = require('johnny-five');
 const board = new five.Board();
 let led, tempIntervalId, bodyTemp;
@@ -54,13 +55,16 @@ const boardHandler = () => {
   led.color('#000000');
 
   let temperature = new five.Thermometer({
-    controller: 'TMP36',
+    controller: 'LM35',
+    // controller: 'TMP36',
     pin: 'A0',
     freq: 1000,
   });
 
   temperature.on('data', async () => {
     console.log(temperature.C);
+    // console.log(temperature.F);
+    // console.log(temperature.K);
     bodyTemp = temperature.C;
     try {
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
@@ -71,6 +75,34 @@ const boardHandler = () => {
       console.log('error', error);
       // return client.replyMessage(event.replyToken, error);
     }
+  });
+
+  // Neo Pixel
+  const strip = new pixel.Strip({
+    // data: 6,
+    length: 30,
+    board: this,
+    controller: 'I2CBACKPACK',
+  });
+
+  strip.on('ready', function () {
+    console.log("Strip ready, let's go");
+
+    var colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'white'];
+    var current_colors = [0, 1, 2, 3, 4];
+    var current_pos = [0, 1, 2, 3, 4];
+    var blinker = setInterval(function () {
+      strip.color('#000'); // blanks it out
+      if (bodyTemp >= feverTemp) {
+        strip.color('#FF0000'); // blanks it out
+        strip.show();
+      }
+      if (bodyTemp < feverTemp) {
+        strip.color('#00FF00'); // blanks it out
+        strip.show();
+      }
+      strip.show();
+    }, 1000 / fps);
   });
 
   // register a webhook handler with middleware
