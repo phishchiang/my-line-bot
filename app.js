@@ -9,7 +9,8 @@ connectDB();
 const pixel = require('node-pixel');
 const five = require('johnny-five');
 const board = new five.Board();
-let led, tempIntervalId, bodyTemp;
+let led, tempIntervalId, bodyTemp, newBodyTemp;
+let HexColor = '#000000';
 // let magicNum = 0;
 // let winner = false;
 // let restart = false;
@@ -38,39 +39,47 @@ const client = new line.Client(config);
 
 const app = express();
 
+const { HSLToHex } = require('./HSLToHex');
+
 function boardHandler() {
   // Initialize the RGB LED
-  led = new five.Led.RGB({
-    pins: {
-      red: 6,
-      green: 5,
-      blue: 3,
-    },
-  });
+  // led = new five.Led.RGB({
+  //   pins: {
+  //     red: 6,
+  //     green: 5,
+  //     blue: 3,
+  //   },
+  // });
 
-  board.repl.inject({ led });
+  // board.repl.inject({ led });
 
-  // Turn it on and set the initial color
-  led.on();
-  led.color('#000000');
+  // // Turn it on and set the initial color
+  // led.on();
+  // led.color('#000000');
 
   let temperature = new five.Thermometer({
     controller: 'LM35',
     // controller: 'TMP36',
     pin: 'A0',
-    freq: 1000,
+    freq: 2000,
   });
 
+  function map_range(value, low1, high1, low2, high2) {
+    return low2 + ((high2 - low2) * (value - low1)) / (high1 - low1);
+  }
+
   temperature.on('data', async () => {
-    console.log(temperature.C);
+    const mapColorVal = map_range(temperature.C, 25, 40, 0, 360);
+    HexColor = HSLToHex(mapColorVal, 100, 50);
+    console.log(`Temp is ${temperature.C}, fever is ${feverTemp}`);
     // console.log(temperature.F);
     // console.log(temperature.K);
     bodyTemp = temperature.C;
+    // console.log(data);
     try {
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
         temp: temperature.C,
       });
-      // console.log(data);
     } catch (error) {
       console.log('error', error);
       // return client.replyMessage(event.replyToken, error);
@@ -78,7 +87,7 @@ function boardHandler() {
   });
 
   // Neo Pixel
-  const fps = 20;
+  const fps = 10;
   const feverTemp = 36;
 
   const strip = new pixel.Strip({
@@ -103,18 +112,26 @@ function boardHandler() {
     const current_colors = [0, 1, 2, 3, 4];
     const current_pos = [0, 1, 2, 3, 4];
     const blinker = setInterval(function () {
-      strip.color('#000'); // blanks it out
+      // HexColor = '#ff0066';
+      // strip.color(`${HexColor}`); // blanks it out
       if (bodyTemp >= feverTemp) {
-        strip.color('#FF0000'); // blanks it out
+        strip.color('#0000FF');
         strip.show();
       }
       if (bodyTemp < feverTemp) {
-        strip.color('#00FF00'); // blanks it out
+        strip.color('#FF0000');
         strip.show();
       }
-      strip.show();
+
+      // strip.show();
     }, 1000 / fps);
   });
+
+  // this.repl.inject({
+  //   strip: strip,
+  //   bodyTemp: bodyTemp,
+  //   feverTemp: feverTemp,
+  // });
 
   // register a webhook handler with middleware
   app.post('/callback', line.middleware(config), (req, res) => {
