@@ -6,7 +6,6 @@ const axios = require('axios');
 const connectDB = require('./config/db');
 connectDB();
 
-const pixel = require('node-pixel');
 const five = require('johnny-five');
 const board = new five.Board();
 let led, tempIntervalId, bodyTemp, newBodyTemp;
@@ -43,19 +42,19 @@ const { HSLToHex } = require('./HSLToHex');
 
 function boardHandler() {
   // Initialize the RGB LED
-  // led = new five.Led.RGB({
-  //   pins: {
-  //     red: 6,
-  //     green: 5,
-  //     blue: 3,
-  //   },
-  // });
+  led = new five.Led.RGB({
+    pins: {
+      red: 6,
+      green: 5,
+      blue: 3,
+    },
+  });
 
-  // board.repl.inject({ led });
+  board.repl.inject({ led });
 
-  // // Turn it on and set the initial color
-  // led.on();
-  // led.color('#000000');
+  // Turn it on and set the initial color
+  led.on();
+  led.color('#000000');
 
   let temperature = new five.Thermometer({
     controller: 'LM35',
@@ -71,67 +70,20 @@ function boardHandler() {
   temperature.on('data', async () => {
     const mapColorVal = map_range(temperature.C, 25, 40, 0, 360);
     HexColor = HSLToHex(mapColorVal, 100, 50);
-    console.log(`Temp is ${temperature.C}, fever is ${feverTemp}`);
+    // console.log(`Temp is ${temperature.C}, remapVal is ${mapColorVal}`);
     // console.log(temperature.F);
     // console.log(temperature.K);
     bodyTemp = temperature.C;
     // console.log(data);
-    try {
-      const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
-        temp: temperature.C,
-      });
-    } catch (error) {
-      console.log('error', error);
-      // return client.replyMessage(event.replyToken, error);
-    }
+    // try {
+    //   const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+    //     temp: temperature.C,
+    //   });
+    // } catch (error) {
+    //   console.log('error', error);
+    //   // return client.replyMessage(event.replyToken, error);
+    // }
   });
-
-  // Neo Pixel
-  const fps = 10;
-  const feverTemp = 36;
-
-  const strip = new pixel.Strip({
-    // data: 6,
-    length: 30,
-    board: this,
-    controller: 'I2CBACKPACK',
-  });
-
-  strip.on('ready', function () {
-    console.log("Strip ready, let's go");
-
-    const colors = [
-      'red',
-      'green',
-      'blue',
-      'yellow',
-      'cyan',
-      'magenta',
-      'white',
-    ];
-    const current_colors = [0, 1, 2, 3, 4];
-    const current_pos = [0, 1, 2, 3, 4];
-    const blinker = setInterval(function () {
-      // HexColor = '#ff0066';
-      // strip.color(`${HexColor}`); // blanks it out
-      if (bodyTemp >= feverTemp) {
-        strip.color('#0000FF');
-        strip.show();
-      }
-      if (bodyTemp < feverTemp) {
-        strip.color('#FF0000');
-        strip.show();
-      }
-
-      // strip.show();
-    }, 1000 / fps);
-  });
-
-  // this.repl.inject({
-  //   strip: strip,
-  //   bodyTemp: bodyTemp,
-  //   feverTemp: feverTemp,
-  // });
 
   // register a webhook handler with middleware
   app.post('/callback', line.middleware(config), (req, res) => {
@@ -402,7 +354,7 @@ async function handleEvent(event) {
     // const userProfile = await client.getProfile(userId);
     const replyMsg = {
       type: 'text',
-      text: `偶縮, ${echoMsg}`,
+      text: `偶縮, @phish${echoMsg}`,
     };
     console.log(event);
     return client.replyMessage(event.replyToken, replyMsg);
