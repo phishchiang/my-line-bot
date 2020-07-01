@@ -50,7 +50,7 @@ function boardHandler() {
     },
   });
 
-  board.repl.inject({ led });
+  // board.repl.inject({ led });
 
   // Turn it on and set the initial color
   led.on();
@@ -297,21 +297,52 @@ async function handleEvent(event) {
   // keyword temp
   if (event.message.text.toLowerCase().includes('temp')) {
     const data = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
-    const temp = data.data.data[0].temp;
+    const { isTesting, doneTest, temp } = data.data.data[0];
     let replyMsg;
-    if (temp < 38) {
-      replyMsg = {
+
+    async function IntervalRemindTest() {
+      message = {
         type: 'text',
-        text: `現在體溫攝氏 ${temp} 度，沒有發燒`,
+        text: `Phish，趕快開始量體溫!!`,
       };
-    } else {
-      replyMsg = {
-        type: 'text',
-        text: `現在體溫攝氏 ${temp} 度，發燒了喔!!`,
-      };
+      client.pushMessage(event.source.groupId, message);
     }
 
-    console.log(data.data.data[0].temp);
+    if (!isTesting && !doneTest) {
+      // Keep remind me
+      // IntervalRemindTest();
+      // tempIntervalId = setInterval(IntervalRemindTest, 5000);
+      console.log('BBB');
+    }
+
+    if (isTesting && !doneTest) {
+      // Waiting the test result
+      message = {
+        type: 'text',
+        text: `Phish已經在量體溫了稍等會!!`,
+      };
+      client.pushMessage(event.source.groupId, message);
+    }
+
+    if (doneTest) {
+      if (temp < 38) {
+        replyMsg = {
+          type: 'text',
+          text: `現在體溫攝氏 ${temp} 度，沒有發燒`,
+        };
+      } else {
+        replyMsg = {
+          type: 'text',
+          text: `現在體溫攝氏 ${temp} 度，發燒了喔!!`,
+        };
+      }
+    }
+    replyMsg = {
+      type: 'text',
+      text: `GGG`,
+    };
+    // console.log(data.data.data[0].temp);
+    console.log(doneTest);
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
@@ -347,16 +378,47 @@ async function handleEvent(event) {
     }
   }
 
+  // keyword OK
+  if (event.message.text.toLowerCase().includes('OK')) {
+    const echoMsg = event.message.text.toLowerCase().split('OK').join(' ');
+    const userId = event.source.userId;
+    const userProfile = await client.getProfile(userId);
+    if (userProfile.displayName !== 'phish') return;
+    const replyMsg = {
+      type: 'text',
+      text: `Phish已經在量體溫了稍等會!!`,
+    };
+    console.log(userProfile);
+    try {
+      const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+        isTesting: true,
+      });
+    } catch (error) {
+      console.log('error', error);
+      // return client.replyMessage(event.replyToken, error);
+    }
+
+    async function myFunc() {
+      const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+        doneTest: true,
+      });
+      console.log(`Phish量好體溫了!!`);
+    }
+
+    setTimeout(myFunc, 10000);
+    return client.replyMessage(event.replyToken, replyMsg);
+  }
+
   // keyword lala
   if (event.message.text.toLowerCase().includes('lala')) {
     const echoMsg = event.message.text.toLowerCase().split('lala').join(' ');
     const userId = event.source.userId;
-    // const userProfile = await client.getProfile(userId);
+    const userProfile = await client.getProfile(userId);
     const replyMsg = {
       type: 'text',
-      text: `偶縮, @phish${echoMsg}`,
+      text: `偶縮, @${userProfile.displayName} ${echoMsg}`,
     };
-    console.log(event);
+    console.log(userProfile);
     return client.replyMessage(event.replyToken, replyMsg);
   }
 }
