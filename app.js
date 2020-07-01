@@ -300,8 +300,8 @@ async function handleEvent(event) {
     const { isTesting, doneTest, temp } = data.data.data[0];
     let replyMsg;
 
-    async function IntervalRemindTest() {
-      message = {
+    function IntervalRemindTest() {
+      const message = {
         type: 'text',
         text: `Phish，趕快開始量體溫!!`,
       };
@@ -310,9 +310,8 @@ async function handleEvent(event) {
 
     if (!isTesting && !doneTest) {
       // Keep remind me
-      // IntervalRemindTest();
-      // tempIntervalId = setInterval(IntervalRemindTest, 5000);
-      console.log('BBB');
+      IntervalRemindTest();
+      tempIntervalId = setInterval(IntervalRemindTest, 5000);
     }
 
     if (isTesting && !doneTest) {
@@ -330,11 +329,13 @@ async function handleEvent(event) {
           type: 'text',
           text: `現在體溫攝氏 ${temp} 度，沒有發燒`,
         };
+        client.replyMessage(event.replyToken, replyMsg);
       } else {
         replyMsg = {
           type: 'text',
           text: `現在體溫攝氏 ${temp} 度，發燒了喔!!`,
         };
+        client.replyMessage(event.replyToken, replyMsg);
       }
     }
     replyMsg = {
@@ -342,8 +343,8 @@ async function handleEvent(event) {
       text: `GGG`,
     };
     // console.log(data.data.data[0].temp);
-    console.log(doneTest);
-    return client.replyMessage(event.replyToken, replyMsg);
+    // console.log(doneTest);
+    // return client.replyMessage(event.replyToken, replyMsg);
   }
 
   // test push message
