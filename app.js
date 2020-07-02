@@ -13,6 +13,8 @@ let temperature;
 let HexColor = '#000000';
 const testingTime = 5000;
 const resetTime = 5000;
+const remindTime = 5000;
+const tempSensorTime = 2000;
 // let magicNum = 0;
 // let winner = false;
 // let restart = false;
@@ -63,7 +65,7 @@ function boardHandler() {
     controller: 'LM35',
     // controller: 'TMP36',
     pin: 'A0',
-    freq: 2000,
+    freq: tempSensorTime,
   });
 
   function map_range(value, low1, high1, low2, high2) {
@@ -145,8 +147,8 @@ async function handleEvent(event) {
       };
     }
 
-    if (command === 'blink') {
-      led.blink(500);
+    if (command === 'strobe') {
+      led.strobe(500);
       replyMsg = {
         type: 'text',
         text: `燈閃爍了`,
@@ -310,6 +312,8 @@ async function handleEvent(event) {
     let replyMsg;
 
     function IntervalRemindTest() {
+      led.color('#FF0000');
+      led.strobe(500);
       const message = {
         type: 'text',
         text: `Phish，趕快開始量體溫!!`,
@@ -320,7 +324,7 @@ async function handleEvent(event) {
     if (!isTesting && !doneTest) {
       // Keep remind me
       IntervalRemindTest();
-      tempIntervalId = setInterval(IntervalRemindTest, 5000);
+      tempIntervalId = setInterval(IntervalRemindTest, remindTime);
     }
 
     if (isTesting && !doneTest) {
@@ -341,7 +345,12 @@ async function handleEvent(event) {
       if (diffSec * 1000 > resetTime) {
         // Keep remind me
         IntervalRemindTest();
-        tempIntervalId = setInterval(IntervalRemindTest, 5000);
+        tempIntervalId = setInterval(IntervalRemindTest, remindTime);
+        const resetData = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+          ...getData.data.data[0],
+          isTesting: false,
+          doneTest: false,
+        });
       }
       if (temp < 38) {
         replyMsg = {
@@ -375,6 +384,24 @@ async function handleEvent(event) {
     const tempDataObject = getData.data.data[0];
     console.log(userProfile);
     if (userProfile.displayName !== 'phish') return;
+
+    // Led
+    let ledIntenVal = 0;
+    let ledValIsUp = true;
+    function colorLedFade() {
+      if (ledIntenVal < 100 && ledValIsUp) {
+        led.intensity((ledIntenVal += 10));
+      } else if (ledIntenVal == 100 && ledValIsUp) {
+        ledValIsUp = false;
+      } else if (ledIntenVal > 0 && !ledValIsUp) {
+        led.intensity((ledIntenVal -= 10));
+      } else if (ledIntenVal == 0 && !ledValIsUp) {
+        ledValIsUp = true;
+      }
+    }
+
+    led.stop();
+    const testingLedIntervalId = setInterval(colorLedFade, 100);
     clearInterval(tempIntervalId);
     temperature.enable();
     const replyMsg = {
@@ -401,7 +428,9 @@ async function handleEvent(event) {
         isTesting: false,
         doneTest: false,
       });
-      console.log('還原參數');
+      console.log('reset');
+      led.color('#000000');
+      led.stop();
     }
 
     async function finishedTest() {
@@ -417,12 +446,20 @@ async function handleEvent(event) {
       temperature.disable();
       setTimeout(resetTestRes, resetTime);
       if (temp < 38) {
+        clearInterval(testingLedIntervalId);
+        led.stop();
+        led.on();
+        led.color('#00FF00');
         const finalMsg = {
           type: 'text',
           text: `現在體溫攝氏 ${temp} 度，沒有發燒`,
         };
         client.pushMessage(event.source.groupId, finalMsg);
       } else {
+        clearInterval(testingLedIntervalId);
+        led.stop();
+        led.on();
+        led.color('#FF0000');
         finalMsg = {
           type: 'text',
           text: `現在體溫攝氏 ${temp} 度，發燒了喔!!`,
