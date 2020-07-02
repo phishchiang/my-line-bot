@@ -333,6 +333,16 @@ async function handleEvent(event) {
     }
 
     if (doneTest) {
+      const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+      const dataSeconds = new Date(getData.data.data[0].createdAt).getSeconds();
+      const Now = new Date().getSeconds();
+      const diffSec = Now - dataSeconds;
+      console.log(diffSec);
+      if (diffSec * 1000 > resetTime) {
+        // Keep remind me
+        IntervalRemindTest();
+        tempIntervalId = setInterval(IntervalRemindTest, 5000);
+      }
       if (temp < 38) {
         replyMsg = {
           type: 'text',
@@ -354,38 +364,6 @@ async function handleEvent(event) {
     // console.log(data.data.data[0].temp);
     // console.log(doneTest);
     // return client.replyMessage(event.replyToken, replyMsg);
-  }
-
-  // test push message
-  if (event.message.text.toLowerCase().includes('monitor')) {
-    const command = event.message.text.toLowerCase().split(' ')[1];
-
-    async function IntervalFunc() {
-      // console.log(i);
-      const data = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
-      const temp = await data.data.data[0].temp;
-      const message = {
-        type: 'text',
-        text: `開始監控體溫!!! 現在體溫為${temp}度~`,
-      };
-      client.pushMessage(event.source.groupId, message);
-      // console.log(event);
-      // i += 3;
-    }
-
-    if (command === 'on') {
-      IntervalFunc();
-      tempIntervalId = setInterval(IntervalFunc, 5000);
-    }
-    if (command === 'off') {
-      clearInterval(tempIntervalId);
-      // console.log(tempIntervalId);
-      const message = {
-        type: 'text',
-        text: `結束瘋狂監控!!`,
-      };
-      client.pushMessage(event.source.groupId, message);
-    }
   }
 
   // keyword ok
