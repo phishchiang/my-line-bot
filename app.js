@@ -9,6 +9,7 @@ connectDB();
 const five = require('johnny-five');
 const board = new five.Board();
 let led, tempIntervalId, bodyTemp, newBodyTemp;
+let temperature;
 let HexColor = '#000000';
 const testingTime = 3000;
 const resetTime = 3000;
@@ -58,7 +59,7 @@ function boardHandler() {
   led.on();
   led.color('#000000');
 
-  let temperature = new five.Thermometer({
+  temperature = new five.Thermometer({
     controller: 'LM35',
     // controller: 'TMP36',
     pin: 'A0',
@@ -74,7 +75,7 @@ function boardHandler() {
     // const { isTesting, doneTest, temp } = data.data.data[0];
     const tempDataObject = getData.data.data[0];
     bodyTemp = temperature.C;
-    console.log(bodyTemp);
+    // console.log(tempDataObject);
     if (!tempDataObject.isTesting) return;
     const mapColorVal = map_range(temperature.C, 25, 40, 0, 360);
     HexColor = HSLToHex(mapColorVal, 100, 50);
@@ -397,6 +398,7 @@ async function handleEvent(event) {
     console.log(userProfile);
     if (userProfile.displayName !== 'phish') return;
     clearInterval(tempIntervalId);
+    temperature.enable();
     const replyMsg = {
       type: 'text',
       text: `Phish已經在量體溫了稍等 ${testingTime / 1000} 秒鐘!!`,
@@ -420,20 +422,22 @@ async function handleEvent(event) {
         isTesting: 'false',
         doneTest: 'false',
       });
-      // console.log(resetData);
+      console.log('resetData');
+      console.log(resetVal);
     }
 
     async function finishedTest() {
       console.log(`Phish量好體溫了!!`);
       const finalRes = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
       const { temp } = finalRes.data.data[0];
-      // console.log(temp);
+      console.log('NEXT');
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
-        ...tempDataObject,
+        ...finalRes.data.data[0],
         temp,
-        isTesting: 'false',
-        doneTest: 'true',
+        isTesting: false,
+        doneTest: true,
       });
+      temperature.disable();
       setTimeout(resetTestRes, resetTime);
       if (temp < 38) {
         const finalMsg = {
