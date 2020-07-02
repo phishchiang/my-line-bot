@@ -38,17 +38,20 @@ exports.addTempState = async (req, res, next) => {
 // @route   Update /api/v1/tempState/
 // @access  Public
 exports.updateTempState = async (req, res, next) => {
+  const tempFields = {};
+  if (req.body.temp) tempFields.temp = req.body.temp;
+  if (req.body.isTesting) tempFields.isTesting = req.body.isTesting;
+  if (req.body.doneTest) tempFields.doneTest = req.body.doneTest;
+  tempFields.createdAt = new Date();
+
   try {
     const tempState = await TempState.find()
       .sort({ createdAt: -1 })
       .limit(1)
       .updateOne({
-        $set: {
-          temp: req.body.temp,
-          doneTest: req.body.doneTest,
-          createdAt: new Date(),
-        },
+        $set: tempFields,
       });
+    console.log(req.body);
 
     return res.status(201).json({
       success: true,

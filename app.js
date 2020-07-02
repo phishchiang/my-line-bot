@@ -394,8 +394,9 @@ async function handleEvent(event) {
     // console.log(userProfile);
     try {
       const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
-      console.log(getData.data.data[0]);
+      const tempDataObject = getData.data.data[0];
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+        ...tempDataObject,
         isTesting: true,
       });
     } catch (error) {
@@ -403,14 +404,17 @@ async function handleEvent(event) {
       // return client.replyMessage(event.replyToken, error);
     }
 
-    async function myFunc() {
+    async function finishedTest() {
+      const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+      const tempDataObject = getData.data.data[0];
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+        ...tempDataObject,
         doneTest: true,
       });
       console.log(`Phish量好體溫了!!`);
     }
 
-    setTimeout(myFunc, 10000);
+    setTimeout(finishedTest, 10000);
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
