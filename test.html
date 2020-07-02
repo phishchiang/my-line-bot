@@ -16,6 +16,15 @@
         '8ball': 'eightBall',
       };
 
+      let testObj = {
+        name: 'apple',
+        nuumber: 10,
+        data: false,
+      };
+      console.log(testObj);
+      let newObj = { ...testObj, name: 'book' };
+      console.log(newObj);
+
       function BBB(guessNum) {
         guessNum = parseInt(guessNum.split('game')[1]);
         if (guessNum > number) {

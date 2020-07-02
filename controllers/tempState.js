@@ -51,8 +51,7 @@ exports.updateTempState = async (req, res, next) => {
       .updateOne({
         $set: tempFields,
       });
-    console.log(req.body);
-
+    console.log(tempFields);
     return res.status(201).json({
       success: true,
       data: tempState,

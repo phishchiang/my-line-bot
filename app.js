@@ -10,6 +10,8 @@ const five = require('johnny-five');
 const board = new five.Board();
 let led, tempIntervalId, bodyTemp, newBodyTemp;
 let HexColor = '#000000';
+const testingTime = 3000;
+const resetTime = 3000;
 // let magicNum = 0;
 // let winner = false;
 // let restart = false;
@@ -68,21 +70,27 @@ function boardHandler() {
   }
 
   temperature.on('data', async () => {
+    const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+    // const { isTesting, doneTest, temp } = data.data.data[0];
+    const tempDataObject = getData.data.data[0];
+    bodyTemp = temperature.C;
+    console.log(bodyTemp);
+    if (!tempDataObject.isTesting) return;
     const mapColorVal = map_range(temperature.C, 25, 40, 0, 360);
     HexColor = HSLToHex(mapColorVal, 100, 50);
     // console.log(`Temp is ${temperature.C}, remapVal is ${mapColorVal}`);
     // console.log(temperature.F);
     // console.log(temperature.K);
-    bodyTemp = temperature.C;
-    // console.log(data);
-    // try {
-    //   const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
-    //     temp: temperature.C,
-    //   });
-    // } catch (error) {
-    //   console.log('error', error);
-    //   // return client.replyMessage(event.replyToken, error);
-    // }
+
+    try {
+      const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+        ...tempDataObject,
+        temp: temperature.C,
+      });
+    } catch (error) {
+      console.log('error', error);
+      // return client.replyMessage(event.replyToken, error);
+    }
   });
 
   // register a webhook handler with middleware
@@ -384,17 +392,17 @@ async function handleEvent(event) {
     const echoMsg = event.message.text.toLowerCase().split('ok').join(' ');
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
+    const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+    const tempDataObject = getData.data.data[0];
     console.log(userProfile);
     if (userProfile.displayName !== 'phish') return;
     clearInterval(tempIntervalId);
     const replyMsg = {
       type: 'text',
-      text: `Phish已經在量體溫了稍等會!!`,
+      text: `Phish已經在量體溫了稍等 ${testingTime / 1000} 秒鐘!!`,
     };
     // console.log(userProfile);
     try {
-      const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
-      const tempDataObject = getData.data.data[0];
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
         ...tempDataObject,
         isTesting: true,
@@ -404,17 +412,45 @@ async function handleEvent(event) {
       // return client.replyMessage(event.replyToken, error);
     }
 
-    async function finishedTest() {
-      const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
-      const tempDataObject = getData.data.data[0];
-      const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
-        ...tempDataObject,
-        doneTest: true,
+    async function resetTestRes() {
+      const finalRes = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+      const resetVal = finalRes.data.data[0];
+      const resetData = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+        ...resetVal,
+        isTesting: 'false',
+        doneTest: 'false',
       });
-      console.log(`Phish量好體溫了!!`);
+      // console.log(resetData);
     }
 
-    setTimeout(finishedTest, 10000);
+    async function finishedTest() {
+      console.log(`Phish量好體溫了!!`);
+      const finalRes = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+      const { temp } = finalRes.data.data[0];
+      // console.log(temp);
+      const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
+        ...tempDataObject,
+        temp,
+        isTesting: 'false',
+        doneTest: 'true',
+      });
+      setTimeout(resetTestRes, resetTime);
+      if (temp < 38) {
+        const finalMsg = {
+          type: 'text',
+          text: `現在體溫攝氏 ${temp} 度，沒有發燒`,
+        };
+        client.pushMessage(event.source.groupId, finalMsg);
+      } else {
+        finalMsg = {
+          type: 'text',
+          text: `現在體溫攝氏 ${temp} 度，發燒了喔!!`,
+        };
+        client.pushMessage(event.source.groupId, finalMsg);
+      }
+    }
+
+    setTimeout(finishedTest, testingTime);
     return client.replyMessage(event.replyToken, replyMsg);
   }
 
