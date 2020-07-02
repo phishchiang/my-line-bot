@@ -45,6 +45,7 @@ exports.updateTempState = async (req, res, next) => {
       .updateOne({
         $set: {
           temp: req.body.temp,
+          doneTest: req.body.doneTest,
           createdAt: new Date(),
         },
       });

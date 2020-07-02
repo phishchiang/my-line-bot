@@ -379,18 +379,22 @@ async function handleEvent(event) {
     }
   }
 
-  // keyword OK
-  if (event.message.text.toLowerCase().includes('OK')) {
-    const echoMsg = event.message.text.toLowerCase().split('OK').join(' ');
+  // keyword ok
+  if (event.message.text.toLowerCase().includes('ok')) {
+    const echoMsg = event.message.text.toLowerCase().split('ok').join(' ');
     const userId = event.source.userId;
     const userProfile = await client.getProfile(userId);
+    console.log(userProfile);
     if (userProfile.displayName !== 'phish') return;
+    clearInterval(tempIntervalId);
     const replyMsg = {
       type: 'text',
       text: `Phish已經在量體溫了稍等會!!`,
     };
-    console.log(userProfile);
+    // console.log(userProfile);
     try {
+      const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
+      console.log(getData.data.data[0]);
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
         isTesting: true,
       });
