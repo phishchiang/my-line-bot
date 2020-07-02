@@ -39,9 +39,9 @@ exports.addTempState = async (req, res, next) => {
 // @access  Public
 exports.updateTempState = async (req, res, next) => {
   const tempFields = {};
-  if (req.body.temp) tempFields.temp = req.body.temp;
-  if (req.body.isTesting) tempFields.isTesting = req.body.isTesting;
-  if (req.body.doneTest) tempFields.doneTest = req.body.doneTest;
+  tempFields.temp = req.body.temp;
+  tempFields.isTesting = req.body.isTesting;
+  tempFields.doneTest = req.body.doneTest;
   tempFields.createdAt = new Date();
 
   try {

@@ -11,8 +11,8 @@ const board = new five.Board();
 let led, tempIntervalId, bodyTemp, newBodyTemp;
 let temperature;
 let HexColor = '#000000';
-const testingTime = 3000;
-const resetTime = 3000;
+const testingTime = 5000;
+const resetTime = 5000;
 // let magicNum = 0;
 // let winner = false;
 // let restart = false;
@@ -417,13 +417,13 @@ async function handleEvent(event) {
     async function resetTestRes() {
       const finalRes = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
       const resetVal = finalRes.data.data[0];
+      console.log(resetVal);
       const resetData = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
         ...resetVal,
-        isTesting: 'false',
-        doneTest: 'false',
+        isTesting: false,
+        doneTest: false,
       });
-      console.log('resetData');
-      console.log(resetVal);
+      console.log('還原參數');
     }
 
     async function finishedTest() {
@@ -433,7 +433,6 @@ async function handleEvent(event) {
       console.log('NEXT');
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
         ...finalRes.data.data[0],
-        temp,
         isTesting: false,
         doneTest: true,
       });
