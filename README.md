@@ -13,6 +13,14 @@ ngrok http 8080
 Usually ngrok is a very handy tool allow developer test your code without deployment.
 However, in this case, the thermometer sensor and light are all wired within local network, that's the reason why it doesn't deploy to remote server in the end.
 
+## Serveo running locally
+
+```shell
+ssh -R 80:localhost:8080 serveo.net
+```
+
+Just in case ngrok isn't working for some reason, [Serveo.net](http://serveo.net/ 'Serveo.net') is anotehr option.
+
 ## Deploy (test version)
 
 ```shell

@@ -12,7 +12,7 @@ let led, tempIntervalId, bodyTemp, newBodyTemp;
 let temperature;
 let HexColor = '#000000';
 const testingTime = 5000;
-const resetTime = 5000;
+const resetTime = 60 * 1000;
 const remindTime = 5000;
 const tempSensorTime = 2000;
 // let magicNum = 0;
