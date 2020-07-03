@@ -8,16 +8,13 @@ connectDB();
 
 const five = require('johnny-five');
 const board = new five.Board();
-let led, tempIntervalId, bodyTemp, newBodyTemp;
+let led, tempIntervalId, bodyTemp;
 let temperature;
-let HexColor = '#000000';
 const testingTime = 5000;
-const resetTime = 60 * 1000;
+const resetTime = 60 * 1000; // 60 second to reset doneTest
 const remindTime = 5000;
 const tempSensorTime = 2000;
-// let magicNum = 0;
-// let winner = false;
-// let restart = false;
+
 const AXIOS_URL_LOCAL = 'http://localhost:8080/';
 const AXIOS_URL_REMOTE = 'https://line-bot-8421.herokuapp.com/';
 const GUESS_API = 'api/v1/guessState/';
@@ -42,8 +39,6 @@ const tempState = require('./routes/tempState');
 const client = new line.Client(config);
 
 const app = express();
-
-const { HSLToHex } = require('./HSLToHex');
 
 function boardHandler() {
   // Initialize the RGB LED
@@ -80,7 +75,6 @@ function boardHandler() {
     // console.log(tempDataObject);
     if (!tempDataObject.isTesting) return;
     const mapColorVal = map_range(temperature.C, 25, 40, 0, 360);
-    HexColor = HSLToHex(mapColorVal, 100, 50);
     // console.log(`Temp is ${temperature.C}, remapVal is ${mapColorVal}`);
     // console.log(temperature.F);
     // console.log(temperature.K);
@@ -120,61 +114,9 @@ const { guessRes } = require('./guessRes');
 
 // event handler
 async function handleEvent(event) {
-  const led_colors = {
-    red: 'red',
-    green: 'green',
-    blue: 'blue',
-    purple: 'purple',
-  };
-
   // console.log(event);
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
-  }
-
-  // keyword light
-  if (event.message.text.toLowerCase().includes('light')) {
-    let replyMsg;
-    const echoMsg = event.message.text.toLowerCase().split('light').join(' ');
-    const userId = event.source.userId;
-    const command = event.message.text.toLowerCase().split(' ')[1];
-    if (Object.keys(led_colors).includes(command)) {
-      // commands[command](msg, args);
-      led.color(`${led_colors[command]}`);
-      replyMsg = {
-        type: 'text',
-        text: `燈變${command}了`,
-      };
-    }
-
-    if (command === 'strobe') {
-      led.strobe(500);
-      replyMsg = {
-        type: 'text',
-        text: `燈閃爍了`,
-      };
-    }
-
-    if (command === 'on') {
-      led.stop();
-      led.color('FFFFFF');
-      replyMsg = {
-        type: 'text',
-        text: `燈開了`,
-      };
-    }
-
-    if (command === 'off') {
-      led.color('000000');
-      led.stop();
-      replyMsg = {
-        type: 'text',
-        text: `燈關了`,
-      };
-    }
-
-    console.log(event);
-    return client.replyMessage(event.replyToken, replyMsg);
   }
 
   // keyword debug_guess
@@ -316,7 +258,7 @@ async function handleEvent(event) {
       led.strobe(500);
       const message = {
         type: 'text',
-        text: `Phish，趕快開始量體溫!!`,
+        text: `Hey Phish，check your body temperature!!`,
       };
       client.pushMessage(event.source.groupId, message);
     }
@@ -331,18 +273,18 @@ async function handleEvent(event) {
       // Waiting the test result
       message = {
         type: 'text',
-        text: `Phish已經在量體溫了稍等會!!`,
+        text: `Phish is checking, please wait.`,
       };
       client.pushMessage(event.source.groupId, message);
     }
 
     if (doneTest) {
       const getData = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
-      const dataSeconds = new Date(getData.data.data[0].createdAt).getSeconds();
-      const Now = new Date().getSeconds();
+      const dataSeconds = new Date(getData.data.data[0].createdAt).getTime();
+      const Now = new Date().getTime();
       const diffSec = Now - dataSeconds;
-      console.log(diffSec);
-      if (diffSec * 1000 > resetTime) {
+      console.log(`${(resetTime - diffSec) / 1000} seconds left`);
+      if (diffSec > resetTime) {
         // Keep remind me
         IntervalRemindTest();
         tempIntervalId = setInterval(IntervalRemindTest, remindTime);
@@ -351,28 +293,22 @@ async function handleEvent(event) {
           isTesting: false,
           doneTest: false,
         });
+        return;
       }
       if (temp < 38) {
         replyMsg = {
           type: 'text',
-          text: `現在體溫攝氏 ${temp} 度，沒有發燒`,
+          text: `It's ${temp} ℃，No Fever.`,
         };
-        client.replyMessage(event.replyToken, replyMsg);
+        return client.replyMessage(event.replyToken, replyMsg);
       } else {
         replyMsg = {
           type: 'text',
-          text: `現在體溫攝氏 ${temp} 度，發燒了喔!!`,
+          text: `It's ${temp} ℃，Got Fever!!`,
         };
-        client.replyMessage(event.replyToken, replyMsg);
+        return client.replyMessage(event.replyToken, replyMsg);
       }
     }
-    replyMsg = {
-      type: 'text',
-      text: `GGG`,
-    };
-    // console.log(data.data.data[0].temp);
-    // console.log(doneTest);
-    // return client.replyMessage(event.replyToken, replyMsg);
   }
 
   // keyword ok
@@ -406,7 +342,9 @@ async function handleEvent(event) {
     temperature.enable();
     const replyMsg = {
       type: 'text',
-      text: `Phish已經在量體溫了稍等 ${testingTime / 1000} 秒鐘!!`,
+      text: `Phish is checking now, please wait for ${
+        testingTime / 1000
+      } seconds.`,
     };
     // console.log(userProfile);
     try {
@@ -434,10 +372,9 @@ async function handleEvent(event) {
     }
 
     async function finishedTest() {
-      console.log(`Phish量好體溫了!!`);
+      console.log(`Finished`);
       const finalRes = await axios.get(`${AXIOS_URL_LOCAL}${TEMP_API}`);
       const { temp } = finalRes.data.data[0];
-      console.log('NEXT');
       const data = await axios.put(`${AXIOS_URL_LOCAL}${TEMP_API}`, {
         ...finalRes.data.data[0],
         isTesting: false,
@@ -452,7 +389,7 @@ async function handleEvent(event) {
         led.color('#00FF00');
         const finalMsg = {
           type: 'text',
-          text: `現在體溫攝氏 ${temp} 度，沒有發燒`,
+          text: `It's ${temp} ℃，No Fever.`,
         };
         client.pushMessage(event.source.groupId, finalMsg);
       } else {
@@ -462,7 +399,7 @@ async function handleEvent(event) {
         led.color('#FF0000');
         finalMsg = {
           type: 'text',
-          text: `現在體溫攝氏 ${temp} 度，發燒了喔!!`,
+          text: `It's ${temp} ℃，Got Fever!!`,
         };
         client.pushMessage(event.source.groupId, finalMsg);
       }
@@ -479,7 +416,7 @@ async function handleEvent(event) {
     const userProfile = await client.getProfile(userId);
     const replyMsg = {
       type: 'text',
-      text: `偶縮, @${userProfile.displayName} ${echoMsg}`,
+      text: `echo: ${echoMsg}`,
     };
     console.log(userProfile);
     return client.replyMessage(event.replyToken, replyMsg);
